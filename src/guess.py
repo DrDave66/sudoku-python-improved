@@ -1,12 +1,14 @@
 class Guess:
-    puzzle_string = str()
-    square = str()
-    guess = str()
+    puzzle_state = list()
+    square = int()
+    guess = int()
 
-    def __init__(self, puzzle_string :str, square :str, guess :str):
-        self.puzzle_string = puzzle_string
+    def __init__(self, puzzle_state :list, square :int, guess :int):
+        self.puzzle_state = puzzle_state
         self.square = square
         self.guess = guess
 
     def __repr__(self):
         return f"{self.square} {self.guess}"
+
+

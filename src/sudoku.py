@@ -1,271 +1,304 @@
-import time
-import cProfile
-import re
-from puzzles import Puzzles
-from puzzle import Puzzle
+from guess import Guess
+import random
+from constants import *
 
 
-def solve_one_puzzle(filename, num=None) -> None:
-    """
-    solves one puzzle from a file. if no puzzle number is specified, a random one is chosen
-    :param filename: puzzle filename to be opened
-    :param [optional num: puzzle number
-    :return: None
-    """
-    ps = Puzzles(filename)
-    p = Puzzle()
-    if num is None:
-        import random
-        random.seed()
-        num = random.randrange(ps.get_number_of_puzzles())
-    p.set_puzzle(ps.get_puzzle(num))
-    p.print_puzzle()
-    start = time.perf_counter()
-    p.solve_puzzle()
-    end = time.perf_counter()
-    p.print_puzzle()
-    solve_time = end - start
-    solved = p.is_puzzle_solved()
-    print(f"Puzzle {num}, Solved = {solved}, Time = {solve_time:.4f} ms")
+class Sudoku:
+    puzzle = [allClear for s in squares]
+    allowable_values = [allSet for s in squares]
 
-def solve_puzzle_range(filename, puzzle_range=None):
-    ps = Puzzles(filename)
-    p = Puzzle()
-    if puzzle_range is None:
-        puzzle_range = range(ps.get_number_of_puzzles())
-    start = time.perf_counter()
-    solved = 0
-    unsolved = 0
-    end = 0.0
-    for r in puzzle_range:
-        p.set_puzzle(ps.get_puzzle(r))
-        p.solve_puzzle()
-        end = time.perf_counter()
-        if p.is_puzzle_solved():
-            solved += 1
-        else:
-            unsolved += 1
-    solve_time = end - start
-    average_time = float(solve_time) / float(len(puzzle_range))
-    print(f"Solved = {solved}, Unsolved = {unsolved}, Time = {solve_time:.4f} ms, Average time {average_time:.4f} msec")
+    digits = "123456789"
+    rows = "ABCDEFGHI"
+    cols = "123456789"
+    guess_list = list()
 
-def solve_all_no_stats(filename: str) -> None:
-    ps = Puzzles(filename)
-    p = Puzzle()
-    success = 0
-    failed = 0
-    start = time.perf_counter()
-    n = ps.get_number_of_puzzles()
-    i = 0
-    for i in range(n):
-        p.set_puzzle(ps.get_puzzle(i))
-        p.solve_puzzle()
+    def __init__(self, puzz_text: str = None) -> None:
+        """
+        initializes class Puzzle
+        :param puzz_text: (str) a puzzle string
+        """
 
-        if p.is_puzzle_solved():
-            success += 1
-        else:
-            failed += 1
-    percent = float(failed) / float(i+1) * 100.0
-    solve_time = time.perf_counter() - start
-    print(f"Solved {success} of {i+1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter()-start:.3f} sec, {solve_time/ps.get_number_of_puzzles()*1000:.4f} msec per puzzle")
+        self.clear_puzzle()
+        if puzz_text is not None:
+            file_ok = True
+            # check to make sure puzz is a correctly formated string
+            # remove carriage returns
+            puzz_text.replace("\n", "")
+            # replace 0 with periods
+            puzz_text.replace("0", ".")
+            # verify length
+            if len(puzz_text) != 81:
+                file_ok = False
+            if puzz_text.replace(".", "").isnumeric() is not True:
+                file_ok = False
+            if file_ok:
+                self.set_puzzle(puzz_text)
 
+#     @staticmethod
+#     def _cross(a, b) -> list:
+#         """
+#         computes a vector cross product of each element in iterables A and B.
+#         For example, if you pass in _cross("123","ABC"), the return list will be:
+#             _cross("123","ABC") - ['1A', '1B', '1C', '2A', '2B', '2C', '3A', '3B', '3C']
+#             _cross("1234","ABC")) - ['1A', '1B', '1C', '2A', '2B', '2C', '3A', '3B', '3C', '4A', '4B', '4C']
+#         :param a: first iterable
+#         :param b: second iterable
+#         :return: a list containing the cross product of A and B
+#         """
+#         return [aa+bb for aa in a for bb in b]
 
-def solve_all_with_stats(filename: str, save_failures:bool =False, usemod:int =0) -> None:
-    """
+#     def set_puzzle(self, puz_text: str) -> None:
+#         if len(puz_text) == 81:
+#             self.puzzle = dict(zip(self.squares, puz_text))
+#             for s in self.squares:
+#                 self.allowable_values[s] = self.digits
+#         else:
+#             raise ValueError("String passed to set_puzzle must be 81 chars long")
+#         for s in self.squares:
+#             if self.puzzle[s] == ".":
+#                 self.puzzle[s] = "."
+#             else:
+#                 self.set_value(s, self.puzzle[s])
 
-    :param filename:
-    :param save_failures:
-    :param usemod:
-    :return:
-    """
+#     def clear_puzzle(self):
+#         for u in self.units:
+#             self.puzzle[u] = '.'
+#             self.allowable_values[u] = self.digits
 
-    ps = Puzzles(filename)
-    p = Puzzle()
-    success = 0
-    failed = 0
-    n = ps.get_number_of_puzzles()
-    if usemod == 0:
-        mod = int(n/20)
-    else:
-        mod = usemod
-    if mod == 0:
-        mod = 1
-    start = time.perf_counter()
-    all_failed = list()
-    min_time = 999999999.0
-    max_time = 0.0
-    sum_time = 0.0
-    i = 0
-    for i in range(n):
-        p.set_puzzle(ps.get_puzzle(i))
-        temp_start = time.perf_counter()
-        p.solve_puzzle()
-        temp_end = time.perf_counter()
-        puzzle_time = temp_end - temp_start
-        min_time = min(min_time, puzzle_time)
-        max_time = max(max_time, puzzle_time)
-        sum_time += puzzle_time
-        if p.is_puzzle_solved():
-            success += 1
-        else:
-            failed += 1
-            all_failed.append(i)
-        if (i+1) % mod == 0:
-            percent = float(failed) / float(i+1) * 100.0
-            print(f"Puzzle {i+1}")
-            print(f"    Solved {success} of {i+1} puzzles, {failed} unsolved -> {percent:.3f}%")
-            print(f"    Last puzzle time {(temp_end - temp_start)/float(i+1)*1000:.5f} msec")
-            print(f"    Min time: {min_time*1000:.4f} msec, Max Time {max_time*1000:.4f}")
-            print(f"    Time per puzzle {sum_time/float(i+1)*1000:.4f} msec")
-    end = time.perf_counter()
-    percent = float(failed) / float(i+1) * 100.0
-    print(f"Solved {success} of {i+1} puzzles, {failed} unsolved -> {percent:.3f}%")
-    print(f"Total time {end - start:.3f} sec")
-    print(f"Min time: {min_time * 1000:.4f} msec, Max Time {max_time * 1000:.4f}")
-    print(f"Time per puzzle {sum_time/float(n)*1000:0.6f} msec")
-    if failed > 0 and save_failures is True:
-        failed_filename = filename + "_Failed.txt"
-        failed_file = open(failed_filename, 'wt')
-        for i in all_failed:
-            failed_file.write(f"{ps.get_puzzle(i)}\n")
-        failed_file.close()
-        print(f"Wrote {failed_filename} of failed puzzles")
+#     def get_puzzle_text(self) -> str:
+#         return "".join(self.puzzle[u] for u in self.squares)
 
-def solve_text_puzzle(puzzle):
-    p = Puzzle(puzzle)
-    start = time.perf_counter()
-    p.solve_puzzle()
-    end = time.perf_counter()
-    solve_time = end - start
-    solved = p.is_puzzle_solved()
-    print(f"Puzzle, Solved = {solved}, Time = {solve_time:.4f} ms")
-    p.print_puzzle()
+#     def get_allowable_values_text(self) -> str:
+#         retval = ""
+#         for u in self.squares:
+#             retval = retval + self.allowable_values[u]
+#             if u != "I9":
+#                 retval += "|"
+#         return retval
 
-def solve_text_puzzle_no_output(puzzle) -> bool:
-    p = Puzzle(puzzle)
-    p.solve_puzzle()
-    return p.solve_puzzle()
+#     def get_packed_puzzle(self) -> str:
+#         return self.get_puzzle_text() + "_" + self.get_allowable_values_text()
 
-import concurrent.futures
-
-def solve_all_threads(filename: str) -> None:
-    ps = Puzzles(filename)
-    p = Puzzle()
-    success = 0
-    failed = 0
-    start = time.perf_counter()
-    n = ps.get_number_of_puzzles()
-    i = 0
-    #with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-    with concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:
-        future_sudoku = {executor.submit(solve_text_puzzle_no_output,ps.get_puzzle(i)) : i for i in range(ps.get_number_of_puzzles())}
-        for future in concurrent.futures.as_completed(future_sudoku):
-            result = future_sudoku[future]
-            try:
-                result = future.result()
-            except Exception as exc:
-                print('generated an exception:')
-            else:
-                if result is True:
-                    success += 1
-                else:
-                    failed += 1
-
-    percent = float(failed) / float(n) * 100.0
-    solve_time = time.perf_counter() - start
-    print(f"Solved {success} of {n} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter()-start:.3f} sec, {solve_time/ps.get_number_of_puzzles()*1000:.4f} msec per puzzle")
-
-if __name__ == "__main__":
-    # start = time.perf_counter()
-    # solve_all_threads(Puzzles.puzzle_100000)
-    # print(f"done {time.perf_counter() - start:.4} seconds")
-    ps = Puzzles(Puzzles.puzzle_10000)
-    p = Puzzle()
-    success = 0
-    failed = 0
-    start = time.perf_counter()
-    for i in range(ps.get_number_of_puzzles()):
-        p.set_puzzle(ps.get_puzzle(i))
-        if p.solve_puzzle() is True:
-            success += 1
-        else:
-            failed += 1
-    percent = float(failed) / float(i + 1) * 100.0
-    solve_time = time.perf_counter() - start
-    print(
-        f"Solved {success} of {i + 1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter() - start:.3f} sec, {solve_time / ps.get_number_of_puzzles() * 1000:.4f} msec per puzzle")
-
-    # solve_all_no_stats(Puzzles.1000)
-    # save_stats = False
-    # statsName = 'back to jetbrains python 310.stats'
-
-    # if save_stats is True:
-    #     cProfile.run('solve_all_no_stats(Puzzles.puzzle_10000)',statsName)
-    #     import pstats
-    #     from pstats import SortKey
-    #     p = pstats.Stats(statsName)
-    #     p.strip_dirs().sort_stats(SortKey.CUMULATIVE).print_stats(15)
-    # else:
-    #     import pstats
-    #     from pstats import SortKey
-    #     p = pstats.Stats(statsName)
-    #     p.strip_dirs().sort_stats(SortKey.CUMULATIVE).print_stats(15)
-
-# pycharm python 3.10
-#    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-#         1    0.000    0.000   26.555   26.555 {built-in method builtins.exec}
-#         1    0.000    0.000   26.555   26.555 <string>:1(<module>)
-#         1    0.033    0.033   26.555   26.555 sudoku.py:52(solve_all_no_stats)
-#     10000    0.019    0.000   18.822    0.002 puzzle.py:294(solve_puzzle)
-#     10000    4.270    0.000   17.721    0.002 puzzle.py:212(solve_ones)
-#    810000   10.249    0.000   13.014    0.000 puzzle.py:202(set_value)
-#     10000    0.700    0.000    6.579    0.001 puzzle.py:58(set_puzzle)
-#    643437    1.423    0.000    3.053    0.000 {method 'join' of 'str' objects}
-#   9040356    2.490    0.000    2.490    0.000 {method 'count' of 'str' objects}
-#  16200000    2.476    0.000    2.476    0.000 {method 'replace' of 'str' objects}
-#     20000    0.860    0.000    2.126    0.000 puzzle.py:234(is_puzzle_solved)
-#   6434370    1.630    0.000    1.630    0.000 puzzle.py:226(<genexpr>)
-#   4880000    1.266    0.000    1.266    0.000 puzzle.py:239(<genexpr>)
-#     23831    0.573    0.000    0.767    0.000 puzzle.py:216(<listcomp>)
-#    820000    0.292    0.000    0.292    0.000 {method 'find' of 'str' objects}
-# # improved is_puzzle_solved474
-#    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-#         1    0.000    0.000   28.635   28.635 {built-in method builtins.exec}
-#         1    0.000    0.000   28.635   28.635 <string>:1(<module>)
-#         1    0.035    0.035   28.634   28.634 sudoku.py:52(solve_all_no_stats)
-#     10000    0.021    0.000   20.245    0.002 puzzle.py:291(solve_puzzle)
-#     10000    4.712    0.000   19.043    0.002 puzzle.py:210(solve_ones)
-#    810000   10.577    0.000   13.687    0.000 puzzle.py:200(set_value)
-#     10000    0.754    0.000    6.915    0.001 puzzle.py:58(set_puzzle)
-#    643437    1.657    0.000    3.468    0.000 {method 'join' of 'str' objects}
-#  16200000    2.785    0.000    2.785    0.000 {method 'replace' of 'str' objects}
-#   9040356    2.505    0.000    2.505    0.000 {method 'count' of 'str' objects}
-#     20000    1.056    0.000    2.419    0.000 puzzle.py:232(is_puzzle_solved)
-#   6434370    1.811    0.000    1.811    0.000 puzzle.py:224(<genexpr>)
-#   4880000    1.363    0.000    1.363    0.000 puzzle.py:237(<genexpr>)
-#     23831    0.605    0.000    0.827    0.000 puzzle.py:214(<listcomp>)
-#    820000    0.343    0.000    0.343    0.000 {method 'find' of 'str' objects}
-
-# baseline
- #   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
- #        1    0.000    0.000   28.472   28.472 {built-in method builtins.exec}
- #        1    0.000    0.000   28.471   28.471 <string>:1(<module>)
- #        1    0.039    0.039   28.471   28.471 sudoku.py:52(solve_all_no_stats)
- #    10000    0.022    0.000   19.849    0.002 puzzle.py:291(solve_puzzle)
- #    10000    4.157    0.000   18.121    0.002 puzzle.py:210(solve_ones)
- #   810000   10.251    0.000   13.444    0.000 puzzle.py:200(set_value)
- #    10000    0.655    0.000    6.681    0.001 puzzle.py:58(set_puzzle)
- #    20000    0.021    0.000    3.358    0.000 puzzle.py:232(is_puzzle_solved)
- #    20000    0.096    0.000    3.337    0.000 {built-in method builtins.all}
- #   560000    1.878    0.000    3.241    0.000 puzzle.py:242(<genexpr>)
- #   643437    1.470    0.000    3.193    0.000 {method 'join' of 'str' objects}
- # 16200000    2.830    0.000    2.830    0.000 {method 'replace' of 'str' objects}
- #  9040356    2.587    0.000    2.587    0.000 {method 'count' of 'str' objects}
- #  6434370    1.723    0.000    1.723    0.000 puzzle.py:224(<genexpr>)
- #    23831    0.549    0.000    0.759    0.000 puzzle.py:214(<listcomp>)
+#     def unpack_puzzle(self, text):
+#         puz_allow = text.split("_")
+#         self.puzzle = dict(zip(self.squares, puz_allow[0]))
+#         allow = puz_allow[1].split("|")
+#         self.allowable_values = dict(zip(self.squares, allow))
 
 
-# Solved 100000 of 100000 puzzles, 0 unsolved -> 0.000%
-# Total time 146.760 sec
-# Min time: 0.7340 msec, Max Time 55.7176
-# Time per puzzle 0.990170 msec
+# ################################################################################
+# # puzzle printing functions
+# ################################################################################
+
+#     def pretty_print(self, what, title=None):
+#         """prints a formatted representation of a puzzle
+#         """
+#         header = "     1   2   3    4   5   6    7   8   9"
+#         top = "  ========================================="
+#         row_sep = "  || --------- || --------- || --------- ||"
+#         col_sep = "||"
+#         num_sep = "|"
+#         row_num = -1
+#         col_num = -1
+#         print()
+#         if title is not None:
+#             print(title)
+#         print(header)
+#         print(top)
+#         for r in self.rows:
+#             print(f'{r} {col_sep}', end="")
+#             for c in self.cols:
+#                 index = r + c
+#                 if what[index] == 0:
+#                     print("  ", end="")
+#                 else:
+#                     print(f" {what[index]}", end="")
+#                 if (col_num - 1) % 3 == 0:
+#                     print(f" {col_sep}", end="")
+#                 else:
+#                     print(f" {num_sep}", end="")
+#                 col_num += 1
+#             row_num += 1
+#             print()
+#             if row_num == 8:
+#                 print(top)
+#             elif (row_num + 1) % 3 == 0:
+#                 print(row_sep)
+
+#     def print_allowable_values(self):
+#         """prints a formatted representation of a puzzle
+#         """
+#         what = self.allowable_values
+#         header = "          1           2         3             4           5           6             7           8          9"
+#         top = "  ================================================================================================================="
+#         row_sep = "  || --------------------------------- || --------------------------------- || --------------------------------- ||"
+#         col_sep = "||"
+#         num_sep = "|"
+#         row_num = -1
+#         col_num = -1
+#         print("------ Allowable Values ------")
+#         print(header)
+#         print(top)
+#         for r in self.rows:
+#             print(f'{r} {col_sep}', end="")
+#             for c in self.cols:
+#                 index = r+c
+#                 if len(what[index]) == 1:
+#                     print("          ", end="")
+#                 else:
+#                     print(f" {what[index]:9}", end="")
+#                 if (col_num-1) % 3 == 0:
+#                     print(f" {col_sep}", end="")
+#                 else:
+#                     print(f" {num_sep}", end="")
+#                 col_num += 1
+#             row_num += 1
+#             print()
+#             if row_num == 8:
+#                 print(top)
+#             elif (row_num + 1) % 3 == 0:
+#                 print(row_sep)
+#         print()
+
+#     def print_number_of_available_values(self):
+#         nv = dict()
+#         for r in self.rows:
+#             for c in self.cols:
+#                 index = r+c
+#                 nv[index] = len(self.allowable_values[index])
+#         self.pretty_print(nv, "------ Number of Allowable Values ------")
+
+#     def print_puzzle(self, title=None):
+#         self.pretty_print(self.puzzle, title)
+
+#     def get_number_of_open_squares(self):
+#         num = 0
+#         for u in self.units:
+#             if len(self.allowable_values[u]) > 0:
+#                 num += 1
+#         return num
+
+# ################################################################################
+# # puzzle solving functions
+# ################################################################################
+
+#     def remove_guess(self, square: str, value: str):
+#         self.allowable_values[square] = self.allowable_values[square].replace(value, "")
+
+#     def guesses_remain(self) -> bool:
+#         for s in self.squares:
+#             if len(set(self.digits) - set(self.allowable_values[s])) < 9:
+#                 return True
+#         return False
+
+#     def set_value(self, square, value) -> bool:
+#         if self.allowable_values[square].find(value) == -1:
+#             return False
+#             # raise ValueError(f"You tried to set {value} into square {square}. Not in allowable values")
+#         self.allowable_values[square] = ""
+#         self.puzzle[square] = str(value)
+#         for s in self.peers[square]:
+#             self.allowable_values[s] = self.allowable_values[s].replace(value, "")
+#         return True
+
+#     def solve_ones(self):
+#         set_some = True
+#         while set_some:
+#             set_some = False
+#             with_one = [s for s in self.allowable_values if len(self.allowable_values[s]) == 1]
+#             if len(with_one) > 0:
+#                 for s in with_one:
+#                     if self.allowable_values[s] != "":
+#                         self.set_value(s, self.allowable_values[s])
+#                         set_some = True
+#                 # self.solve_ones()
+#             # look in each unit and see if any value appears only one time
+#             # create a list of all allowable values in a unit (rol, col, square)
+#             for ul in self.unitlist:
+#                 all_allowable = "".join(self.allowable_values[u] for u in ul)
+#                 for d in self.digits:
+#                     if all_allowable.count(d) == 1:
+#                         for u in ul:
+#                             if self.allowable_values[u].count(d) == 1:
+#                                 self.set_value(u, d)
+#                                 set_some = True
+
+#     def is_puzzle_solved(self) -> bool:
+#         # def unitsolved(unit): return set(self.puzzle[s] for s in unit) == set(self.digits)
+#         # return all(unitsolved(unit) for unit in self.unitlist)
+#         # A puzzle is solved if each unit is a permutation of the digits 1 to 9.
+#         sd = set(self.digits)
+#         if set(self.puzzle[u] for ul in self.unitlist for u in ul) != sd:
+#             return False
+#         return True
+#         # for each unit in a unit list, make a set and compare to all digits
+#         # and do that for each unitlist
+#         # return all(set(self.puzzle[u] for u in ul) == set(self.digits) for ul in self.unitlist)
+
+#     def get_guess(self):
+#         min_number = min(len(self.allowable_values[s]) for s in self.squares if len(self.allowable_values[s]) > 0)
+#         subset = [s for s in self.squares if len(self.allowable_values[s]) == min_number]
+#         square = self.get_one_of(subset)
+#         guess = self.get_one_of(self.allowable_values[square])
+#         return guess, square
+
+#     def pop_guess(self):
+#         # pop off last guess
+#         lg = self.guess_list.pop()
+#         # replace teh puzzle from before the last guess
+#         self.unpack_puzzle(lg.puzzle_string)
+#         # remove the last guess from list of available guesses
+#         self.remove_guess(lg.square, lg.guess)
+
+#     def start_guessing(self):
+#         # max_depth = 0
+#         # dead_ends = 0
+#         self.guess_list = []
+#         while not self.is_puzzle_solved():
+#             while self.guesses_remain():
+#                 num, square = self.get_guess()
+#                 guess = self.get_one_of(self.allowable_values[square])
+#                 d = Guess(self.get_packed_puzzle(), square, guess)
+#                 self.guess_list.append(d)
+#                 self.set_value(square, guess)
+#                 self.solve_ones()
+#                 # max_depth = max(max_depth,len(self.guess_list))
+#                 if not self.is_puzzle_solved() and not self.guesses_remain():
+#                     self.pop_guess()
+#             if not self.is_puzzle_solved():
+#                 # dead_ends += 1
+#                 # print("dead end")
+#                 # if we get here, we ran out of guesses.  so.....
+#                 # pop an extra guess off of the stack and continue
+#                 self.pop_guess()
+
+#     @staticmethod
+#     def get_one_of(seq):
+#         return random.choice(seq)
+
+#     @staticmethod
+#     def shuffled(seq):
+#         # Return a randomly shuffled copy of the input sequence.
+#         seq = list(seq)
+#         random.shuffle(seq)
+#         return seq
+
+#     def solve_puzzle(self) -> bool:
+
+#         self.solve_ones()
+#         if self.is_puzzle_solved():
+#             return True
+#         else:
+#             self.start_guessing()
+#             return self.is_puzzle_solved()
+
+#     def random_puzzle(self, n=17):
+#         # self.allowable = dict((s, self.digits) for s in self.squares)
+#         self.clear_puzzle()
+#         for s in self.shuffled(self.squares):
+#             if not self.set_value(s,  random.choice(self.allowable_values[s])):
+#                 break
+#             ds = [self.puzzle[s] for s in self.squares if len(self.allowable_values[s]) == 0]
+#             if len(ds) >= n and len(set(ds)) >= 8:
+#                 return ''.join(self.puzzle[s] if len(self.allowable_values[s]) == 0 else '.' for s in self.squares)
+#         return self.random_puzzle(n)  # Give up and make a new puzzle
