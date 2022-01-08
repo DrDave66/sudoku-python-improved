@@ -1,8 +1,9 @@
 from typing import Final
 
 BITMASK: Final = [1 << i for i in range(10)]
-ALLSET: Final   = 0b1111111111
-ALLCLEAR: Final = 0b0000000000
+ALLSET: Final   = 0b111111111
+ALLCLEAR: Final = 0b000000000
+BITS: Final = [i for i in range(10)]
 
 # squares[81]
 SQUARES: Final = [l for l in range(81)]

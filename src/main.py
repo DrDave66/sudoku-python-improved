@@ -182,9 +182,31 @@ def square_to_text(sq: int) -> str:
     r = int(sq / 9)
     return chr(ord("A") + r) + chr(ord("1") + c)
 
+
+def quick_solve(s, p):
+    solved = 0
+    solve_time = 0
+    total_start = time.perf_counter()
+    for i in range(p.get_number_of_puzzles()):
+        s.set_puzzle(p.get_puzzle(i))
+        # s.print_puzzle_and_allowable_values()
+        start = time.perf_counter()
+        s.solve_ones()
+        solve_time += time.perf_counter() - start
+        if s.is_puzzle_solved():
+            solved += 1
+
+        if (i+1) % 10000 == 0:
+            print(f"{i+1} - {solved}")
+    total_time = time.perf_counter() - total_start
+    print(
+        f"Solved {solved} of {p.get_number_of_puzzles()} puzzles,  {total_time:.3f} sec total, {solve_time / p.get_number_of_puzzles() * 1000:.4f} msec per puzzle")
+
+
 if __name__ == "__main__":
     grid1 = "..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3.."
     grid3 = "8.2.5.7.1..7.8246..1.9.....6....18325.......91843....6.....4.2..9561.3..3.8.9.6.7"
+    need2 = ".687..9....4....71.3.8.9.5.3...8.1...4...5..7..73.4.926.2..1..5....2.6...59.3..28"
     # not solved with ones / peers
     need_guess = ".61.2.....4.6.59..392...5.882...9..74....3......48...3..7..21...1..7....98..146.2"
     easy505 = "1..92....524.1...........7..5...81.2.........4.27...9..6...........3.945....71..6"
@@ -197,8 +219,17 @@ if __name__ == "__main__":
     solved2 = "687942351591376284342158769465239178138567942279814635853791426924683517716425893"
     solved3 = "523846917961537428487219653154693782632478195798152346879324561316985274245761839"
     s = Sudoku()
-    s.set_puzzle(grid1)
-    print(s.get_puzzle_text())
+    p = Puzzles(Puzzles.puzzle_100000)
+    statsName = "test.stats"
+    cProfile.run('quick_solve(s, p)',statsName)
+    import pstats
+    from pstats import SortKey
+    ps = pstats.Stats(statsName)
+    ps.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
+    # for i in SQUARES:
+    #     print(f"{i:03} - {i:010b} - {s.number_of_bits_set(i)}")
+
+
     # # start = time.perf_counter()
     # # solve_all_threads(Puzzles.puzzle_100000)
     # # print(f"done {time.perf_counter() - start:.4} seconds")
@@ -219,3 +250,45 @@ if __name__ == "__main__":
     # solve_time = time.perf_counter() - start
     # print(
     #     f"Solved {success} of {i + 1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter() - start:.3f} sec, {solve_time / ps.get_number_of_puzzles() * 1000:.4f} msec per puzzle")
+
+ #   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+ #  8100000   45.112    0.000   45.112    0.000 sudoku.py:53(set_value)
+ # 49312233   18.161    0.000   18.161    0.000 sudoku.py:103(number_of_bits_set)
+ #   608793   17.674    0.000   35.835    0.000 sudoku.py:224(<listcomp>)
+ #   200027    9.119    0.000    9.119    0.000 sudoku.py:247(is_puzzle_solved)
+ #   100000    4.134    0.000   25.471    0.000 sudoku.py:36(set_puzzle)
+ #   100000    3.586    0.000   70.332    0.001 sudoku.py:218(solve_ones)
+ #   100000    2.162    0.000    2.162    0.000 sudoku.py:48(clear_puzzle)
+ #        1    0.378    0.378  100.716  100.716 main.py:186(quick_solve)
+ #   808796    0.222    0.000    0.222    0.000 {built-in method builtins.len}
+ #   100000    0.076    0.000    0.136    0.000 puzzles.py:37(get_puzzle)
+ #   200002    0.049    0.000    0.049    0.000 {built-in method time.perf_counter}
+ #   100003    0.044    0.000    0.060    0.000 puzzles.py:34(get_number_of_puzzles)
+ #       11    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+ #        1    0.000    0.000  100.716  100.716 {built-in method builtins.exec}
+ #        1    0.000    0.000  100.716  100.716 <string>:1(<module>)
+ #        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+# bit hack to count bits
+ #   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+ #  8100000   41.724    0.000   41.724    0.000 sudoku.py:53(set_value)
+ #   608793   19.712    0.000   37.271    0.000 sudoku.py:228(<listcomp>)
+ # 49312233   17.558    0.000   17.558    0.000 sudoku.py:103(number_of_bits_set)
+ #   200027    9.139    0.000    9.139    0.000 sudoku.py:251(is_puzzle_solved)
+ #   100000    4.039    0.000   23.649    0.000 sudoku.py:36(set_puzzle)
+ #   100000    3.440    0.000   69.537    0.001 sudoku.py:222(solve_ones)
+ #   100000    2.043    0.000    2.043    0.000 sudoku.py:48(clear_puzzle)
+ #        1    0.365    0.365   98.367   98.367 main.py:186(quick_solve)
+ #   808796    0.176    0.000    0.176    0.000 {built-in method builtins.len}
+ #   100000    0.076    0.000    0.180    0.000 puzzles.py:37(get_puzzle)
+ #   200002    0.052    0.000    0.052    0.000 {built-in method time.perf_counter}
+ #   100003    0.043    0.000    0.104    0.000 puzzles.py:34(get_number_of_puzzles)
+ #       11    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+ #        1    0.000    0.000   98.367   98.367 {built-in method builtins.exec}
+ #        1    0.000    0.000   98.367   98.367 <string>:1(<module>)
+ #        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
+ bit hack to count bits
+
+

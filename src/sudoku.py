@@ -1,13 +1,14 @@
 from guess import Guess
 import random
 from constants import *
+from io import StringIO
+import sys
 
 
 
 class Sudoku:
     puzzle = [ALLCLEAR for s1 in SQUARES]
     allowable_values = [ALLSET for s2 in SQUARES]
-    digits = "123456789"
     guess_list = list()
 
     def __init__(self, puzz_text: str = None) -> None:
@@ -37,6 +38,7 @@ class Sudoku:
             pass
         else:
             raise ValueError("String passed to set_puzzle must be 81 chars long")
+        self.clear_puzzle()
         for s in SQUARES:
             if puz_text[s] == '.' or puz_text[s] == '0':
                 self.puzzle[s] = ALLCLEAR
@@ -57,8 +59,12 @@ class Sudoku:
             self.puzzle[s] = bm
             self.allowable_values[s] = ALLCLEAR
         for p in PEERS[s]:
-            self.allowable_values[s] &= ~bm
+            self.allowable_values[p] &= ~bm
         return True
+
+# ################################################################################
+# utility functions
+# ################################################################################
 
     @staticmethod
     def bitmask_to_string(bm: int) -> str:
@@ -71,15 +77,42 @@ class Sudoku:
     def get_puzzle_text(self) -> str:
         return "".join(self.bitmask_to_string(self.puzzle[s]) for s in SQUARES)
 
-#     def get_allowable_values_text(self) -> str:
-#         retval = ""
-#         for u in self.squares:
-#             retval = retval + self.allowable_values[u]
-#             if u != "I9":
-#                 retval += "|"
-#         return retval
+    def get_number_of_open_squares(self):
+        num = 0
+        for s in SQUARES:
+            if len(self.allowable_values[s] != ALLCLEAR):
+                num += 1
+        return num
 
+    def bitmask_to_value(self,  num: int) -> str:
+        retval = ""
+        if num == BITMASK[9]:
+            return "."
+        elif num == ALLCLEAR:
+            return " "
+        if self.number_of_bits_set(num) == 1:
+            for i in range(9):
+                if num >> i & 1 != 0:
+                    return f" {i+1}"
+        else:
+            for i in range(9):
+                if num & BITMASK[i] != 0:
+                    retval += f"{i+1}"
+        return retval
 
+    @staticmethod
+    def number_of_bits_set(num: int) -> int:
+        c = int()
+        c = (num * 0x200040008001 & 0x111111111111111) % 0xf
+        return c
+
+        # result = 0
+        # stop = (num != 0)
+        # while stop:
+        #     num &= num - 1
+        #     result += 1
+        #     stop = (num != 0)
+        # return result
 
 
 # ################################################################################
@@ -96,22 +129,18 @@ class Sudoku:
         num_sep = "|"
         row_num = -1
         col_num = -1
-        print()
         if title is not None:
             print(title)
         print(header)
         print(top)
-        for s in SQUARES:
-            c = int(s % 9)
-            r = int(s / 9)
-            if c == 0:
-                print(f'{chr(ord("A") + r)} {col_sep}', end="")
-
-                index = r + c
-                if what[index] == 0:
-                    print("  ", end="")
+        for r in range(9):
+            print(f'{chr(ord("A") + r)} {col_sep}', end="")
+            for c in range(9):
+                index = r*9 + c
+                if what[index] == ALLCLEAR:
+                    print(" .", end="")
                 else:
-                    print(f" {what[index]}", end="")
+                    print(f"{self.bitmask_to_value(what[index])}", end="")
                 if (col_num - 1) % 3 == 0:
                     print(f" {col_sep}", end="")
                 else:
@@ -124,62 +153,117 @@ class Sudoku:
             elif (row_num + 1) % 3 == 0:
                 print(row_sep)
 
-#     def print_allowable_values(self):
-#         """prints a formatted representation of a puzzle
-#         """
-#         what = self.allowable_values
-#         header = "          1           2         3             4           5           6             7           8          9"
-#         top = "  ================================================================================================================="
-#         row_sep = "  || --------------------------------- || --------------------------------- || --------------------------------- ||"
-#         col_sep = "||"
-#         num_sep = "|"
-#         row_num = -1
-#         col_num = -1
-#         print("------ Allowable Values ------")
-#         print(header)
-#         print(top)
-#         for r in self.rows:
-#             print(f'{r} {col_sep}', end="")
-#             for c in self.cols:
-#                 index = r+c
-#                 if len(what[index]) == 1:
-#                     print("          ", end="")
-#                 else:
-#                     print(f" {what[index]:9}", end="")
-#                 if (col_num-1) % 3 == 0:
-#                     print(f" {col_sep}", end="")
-#                 else:
-#                     print(f" {num_sep}", end="")
-#                 col_num += 1
-#             row_num += 1
-#             print()
-#             if row_num == 8:
-#                 print(top)
-#             elif (row_num + 1) % 3 == 0:
-#                 print(row_sep)
-#         print()
+    def print_allowable_values(self, title: str):
+        """prints a formatted representation of a puzzle
+        """
+        what = self.allowable_values
+        header = "          1           2         3             4           5           6             7           8          9"
+        top = "  ================================================================================================================="
+        row_sep = "  || --------------------------------- || --------------------------------- || --------------------------------- ||"
+        col_sep = "||"
+        num_sep = "|"
+        row_num = -1
+        col_num = -1
+        if title is not None:
+            print(title)
+        print(header)
+        print(top)
+        for r in range(9):
+            print(f'{chr(ord("A") + r)} {col_sep}', end="")
+            for c in range(9):
+                index = r*9 + c
+                if what[index] == ALLCLEAR:
+                    print("          ", end="")
+                else:
+                    print(f" {self.bitmask_to_value(what[index]):9}", end="")
+                if (col_num-1) % 3 == 0:
+                    print(f" {col_sep}", end="")
+                else:
+                    print(f" {num_sep}", end="")
+                col_num += 1
+            row_num += 1
+            print()
+            if row_num == 8:
+                print(top)
+            elif (row_num + 1) % 3 == 0:
+                print(row_sep)
+        print()
 
-#     def print_number_of_available_values(self):
-#         nv = dict()
-#         for r in self.rows:
-#             for c in self.cols:
-#                 index = r+c
-#                 nv[index] = len(self.allowable_values[index])
-#         self.pretty_print(nv, "------ Number of Allowable Values ------")
+    # def print_number_of_available_values(self):
+    #     nv = [BITMASK[self.number_of_bits_set(self.allowable_values[s])-2 ] for s in SQUARES]
+    #     self.pretty_print(nv, "------ Number of Allowable Values ------")
 
-#     def print_puzzle(self, title=None):
-#         self.pretty_print(self.puzzle, title)
+    def print_puzzle(self, title: str = None):
+        self.pretty_print(self.puzzle, title)
 
-#     def get_number_of_open_squares(self):
-#         num = 0
-#         for u in self.units:
-#             if len(self.allowable_values[u]) > 0:
-#                 num += 1
-#         return num
+    def print_puzzle_and_allowable_values(self, title: str = None):
+        puzzle_out = StringIO()
+        values_out = StringIO()
+        # Replace default stdout (terminal) with our stream
+        sys.stdout = puzzle_out
+        self.print_puzzle(title)
+        sys.stdout = values_out
+        self.print_allowable_values(title)
+        sys.stdout = sys.__stdout__
+        pout = puzzle_out.getvalue()
+        vout = values_out.getvalue()
+        pout_lines = pout.split("\n")
+        vout_lines = vout.split("\n")
+        for l in range(len(pout_lines)):
+            print(pout_lines[l] + "   " + vout_lines[l])
+
+
+
 
 # ################################################################################
 # # puzzle solving functions
 # ################################################################################
+
+    def solve_ones(self):
+        set_some = True
+        while set_some:
+            while set_some:
+                # self.print_puzzle_and_allowable_values()
+                set_some = False
+                with_one = [s for s in SQUARES if self.number_of_bits_set(self.allowable_values[s]) == 1]
+                if len(with_one) > 0:
+                    for s in with_one:
+                        if self.allowable_values[s] != "":
+                            self.set_value(s, self.allowable_values[s])
+                            set_some = True
+            # look in each unit and see if any value appears only one time
+            # create a list of all allowable values in a unit (rol, col, square)
+            if self.is_puzzle_solved():
+                return
+#            self.print_puzzle_and_allowable_values()
+            for ul in UNITLIST:
+                for b in BITS:
+                    bit_count = 0
+                    for s in ul:
+                        if self.allowable_values[s] & BITMASK[b] != 0:
+                            bit_count += 1
+                    if bit_count == 1:
+                        for s in ul:
+                            if self.allowable_values[s] & BITMASK[b] != 0:
+                                self.set_value(s, BITMASK[b])
+                                set_some = True
+
+    def is_puzzle_solved(self) -> bool:
+        # def unitsolved(unit): return set(self.puzzle[s] for s in unit) == set(self.digits)
+        # return all(unitsolved(unit) for unit in self.unitlist)
+        # A puzzle is solved if each unit is a permutation of the digits 1 to 9.
+
+        for u in UNITLIST:
+            oreo = 0
+            for s in u:
+                oreo |= self.puzzle[s]
+            if oreo != ALLSET:
+                return False
+        return True
+
+        # for each unit in a unit list, make a set and compare to all digits
+        # and do that for each unitlist
+        # return all(set(self.puzzle[u] for u in ul) == set(self.digits) for ul in self.unitlist)
 
 #     def remove_guess(self, square: str, value: str):
 #         self.allowable_values[square] = self.allowable_values[square].replace(value, "")
@@ -190,49 +274,6 @@ class Sudoku:
 #                 return True
 #         return False
 
-#     def set_value(self, square, value) -> bool:
-#         if self.allowable_values[square].find(value) == -1:
-#             return False
-#             # raise ValueError(f"You tried to set {value} into square {square}. Not in allowable values")
-#         self.allowable_values[square] = ""
-#         self.puzzle[square] = str(value)
-#         for s in self.peers[square]:
-#             self.allowable_values[s] = self.allowable_values[s].replace(value, "")
-#         return True
-
-#     def solve_ones(self):
-#         set_some = True
-#         while set_some:
-#             set_some = False
-#             with_one = [s for s in self.allowable_values if len(self.allowable_values[s]) == 1]
-#             if len(with_one) > 0:
-#                 for s in with_one:
-#                     if self.allowable_values[s] != "":
-#                         self.set_value(s, self.allowable_values[s])
-#                         set_some = True
-#                 # self.solve_ones()
-#             # look in each unit and see if any value appears only one time
-#             # create a list of all allowable values in a unit (rol, col, square)
-#             for ul in self.unitlist:
-#                 all_allowable = "".join(self.allowable_values[u] for u in ul)
-#                 for d in self.digits:
-#                     if all_allowable.count(d) == 1:
-#                         for u in ul:
-#                             if self.allowable_values[u].count(d) == 1:
-#                                 self.set_value(u, d)
-#                                 set_some = True
-
-#     def is_puzzle_solved(self) -> bool:
-#         # def unitsolved(unit): return set(self.puzzle[s] for s in unit) == set(self.digits)
-#         # return all(unitsolved(unit) for unit in self.unitlist)
-#         # A puzzle is solved if each unit is a permutation of the digits 1 to 9.
-#         sd = set(self.digits)
-#         if set(self.puzzle[u] for ul in self.unitlist for u in ul) != sd:
-#             return False
-#         return True
-#         # for each unit in a unit list, make a set and compare to all digits
-#         # and do that for each unitlist
-#         # return all(set(self.puzzle[u] for u in ul) == set(self.digits) for ul in self.unitlist)
 
 #     def get_guess(self):
 #         min_number = min(len(self.allowable_values[s]) for s in self.squares if len(self.allowable_values[s]) > 0)

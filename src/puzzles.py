@@ -14,7 +14,7 @@ class Puzzles:
     solution_5000 = "../sudoku-puzzles/5000S.txt"
     puzzle_10000 = "../sudoku-puzzles/10000P.txt"
     solution_10000 = "../sudoku-puzzles/10000S.txt"
-    puzzle_100000 = "/Users/dave/code/GitHub/sudoku-puzzles/sudoku-puzzles/100000P.txt"
+    puzzle_100000 = "../sudoku-puzzles/100000P.txt"
     puzzle_easy50 = "../sudoku-puzzles/easy50.txt"
     puzzle_hardest = "../sudoku-puzzles/hardest.txt"
     puzzle_top95 = "../sudoku-puzzles/top95.txt"
