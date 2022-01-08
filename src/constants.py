@@ -1,14 +1,14 @@
 from typing import Final
 
-bitMask: Final = [1 << i for i in range(10)]
-allSet: Final   = 0b0000000000
-allClear: Final = 0b1111111111
+BITMASK: Final = [1 << i for i in range(10)]
+ALLSET: Final   = 0b1111111111
+ALLCLEAR: Final = 0b0000000000
 
-#squares[81]
-squares: Final = [l for l in range(81)]
+# squares[81]
+SQUARES: Final = [l for l in range(81)]
 
 # peers[81][20]
-peers: Final = [
+PEERS: Final = [
 	[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 19, 20, 27, 36, 45, 54, 63, 72],
 	[0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 19, 20, 28, 37, 46, 55, 64, 73],
 	[0, 1, 3, 4, 5, 6, 7, 8, 9, 10, 11, 18, 19, 20, 29, 38, 47, 56, 65, 74],
@@ -93,7 +93,7 @@ peers: Final = [
 	]
 
 # units[81][3][9]
-units: Final = [
+UNITS: Final = [
 	[
 		[0,  9, 18, 27, 36, 45, 54, 63, 72],
 		[0,  1,  2,  3,  4,  5,  6,  7,  8],
@@ -502,7 +502,7 @@ units: Final = [
 	]
 
 # unitlist[27][9]
-unitlist: Final = [
+UNITLIST: Final = [
 	[0,  9, 18, 27, 36, 45, 54, 63, 72],
 	[1, 10, 19, 28, 37, 46, 55, 64, 73],
 	[2, 11, 20, 29, 38, 47, 56, 65, 74],

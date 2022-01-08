@@ -3,13 +3,11 @@ import random
 from constants import *
 
 
-class Sudoku:
-    puzzle = [allClear for s in squares]
-    allowable_values = [allSet for s in squares]
 
+class Sudoku:
+    puzzle = [ALLCLEAR for s1 in SQUARES]
+    allowable_values = [ALLSET for s2 in SQUARES]
     digits = "123456789"
-    rows = "ABCDEFGHI"
-    cols = "123456789"
     guess_list = list()
 
     def __init__(self, puzz_text: str = None) -> None:
@@ -17,8 +15,8 @@ class Sudoku:
         initializes class Puzzle
         :param puzz_text: (str) a puzzle string
         """
-
         self.clear_puzzle()
+        print(self.get_puzzle_text())
         if puzz_text is not None:
             file_ok = True
             # check to make sure puzz is a correctly formated string
@@ -27,46 +25,51 @@ class Sudoku:
             # replace 0 with periods
             puzz_text.replace("0", ".")
             # verify length
-            if len(puzz_text) != 81:
+            if len(puzz_text) < 81:
                 file_ok = False
             if puzz_text.replace(".", "").isnumeric() is not True:
                 file_ok = False
             if file_ok:
                 self.set_puzzle(puzz_text)
 
-#     @staticmethod
-#     def _cross(a, b) -> list:
-#         """
-#         computes a vector cross product of each element in iterables A and B.
-#         For example, if you pass in _cross("123","ABC"), the return list will be:
-#             _cross("123","ABC") - ['1A', '1B', '1C', '2A', '2B', '2C', '3A', '3B', '3C']
-#             _cross("1234","ABC")) - ['1A', '1B', '1C', '2A', '2B', '2C', '3A', '3B', '3C', '4A', '4B', '4C']
-#         :param a: first iterable
-#         :param b: second iterable
-#         :return: a list containing the cross product of A and B
-#         """
-#         return [aa+bb for aa in a for bb in b]
+    def set_puzzle(self, puz_text: str) -> None:
+        if len(puz_text) >= 81:
+            pass
+        else:
+            raise ValueError("String passed to set_puzzle must be 81 chars long")
+        for s in SQUARES:
+            if puz_text[s] == '.' or puz_text[s] == '0':
+                self.puzzle[s] = ALLCLEAR
+            else:
+                self.set_value(s, BITMASK[int(puz_text[s]) - 1])
 
-#     def set_puzzle(self, puz_text: str) -> None:
-#         if len(puz_text) == 81:
-#             self.puzzle = dict(zip(self.squares, puz_text))
-#             for s in self.squares:
-#                 self.allowable_values[s] = self.digits
-#         else:
-#             raise ValueError("String passed to set_puzzle must be 81 chars long")
-#         for s in self.squares:
-#             if self.puzzle[s] == ".":
-#                 self.puzzle[s] = "."
-#             else:
-#                 self.set_value(s, self.puzzle[s])
+    def clear_puzzle(self):
+        for s in SQUARES:
+            self.puzzle[s] = ALLCLEAR
+            self.allowable_values[s] = ALLSET
 
-#     def clear_puzzle(self):
-#         for u in self.units:
-#             self.puzzle[u] = '.'
-#             self.allowable_values[u] = self.digits
+    def set_value(self, s: int, bm: int) -> bool:
+        if self.allowable_values[s] & bm == 0:
+            return False
+        if bm == ALLCLEAR:
+            self.puzzle[s] = ALLCLEAR
+        else:
+            self.puzzle[s] = bm
+            self.allowable_values[s] = ALLCLEAR
+        for p in PEERS[s]:
+            self.allowable_values[s] &= ~bm
+        return True
 
-#     def get_puzzle_text(self) -> str:
-#         return "".join(self.puzzle[u] for u in self.squares)
+    @staticmethod
+    def bitmask_to_string(bm: int) -> str:
+        if bm == ALLCLEAR:
+            return "."
+        for i in range(9):
+            if bm & BITMASK[i] != 0:
+                return chr(ord('1') + i)
+
+    def get_puzzle_text(self) -> str:
+        return "".join(self.bitmask_to_string(self.puzzle[s]) for s in SQUARES)
 
 #     def get_allowable_values_text(self) -> str:
 #         retval = ""
@@ -76,54 +79,50 @@ class Sudoku:
 #                 retval += "|"
 #         return retval
 
-#     def get_packed_puzzle(self) -> str:
-#         return self.get_puzzle_text() + "_" + self.get_allowable_values_text()
 
-#     def unpack_puzzle(self, text):
-#         puz_allow = text.split("_")
-#         self.puzzle = dict(zip(self.squares, puz_allow[0]))
-#         allow = puz_allow[1].split("|")
-#         self.allowable_values = dict(zip(self.squares, allow))
 
 
 # ################################################################################
 # # puzzle printing functions
 # ################################################################################
 
-#     def pretty_print(self, what, title=None):
-#         """prints a formatted representation of a puzzle
-#         """
-#         header = "     1   2   3    4   5   6    7   8   9"
-#         top = "  ========================================="
-#         row_sep = "  || --------- || --------- || --------- ||"
-#         col_sep = "||"
-#         num_sep = "|"
-#         row_num = -1
-#         col_num = -1
-#         print()
-#         if title is not None:
-#             print(title)
-#         print(header)
-#         print(top)
-#         for r in self.rows:
-#             print(f'{r} {col_sep}', end="")
-#             for c in self.cols:
-#                 index = r + c
-#                 if what[index] == 0:
-#                     print("  ", end="")
-#                 else:
-#                     print(f" {what[index]}", end="")
-#                 if (col_num - 1) % 3 == 0:
-#                     print(f" {col_sep}", end="")
-#                 else:
-#                     print(f" {num_sep}", end="")
-#                 col_num += 1
-#             row_num += 1
-#             print()
-#             if row_num == 8:
-#                 print(top)
-#             elif (row_num + 1) % 3 == 0:
-#                 print(row_sep)
+    def pretty_print(self, what, title=None):
+        """prints a formatted representation of a puzzle
+        """
+        header = "     1   2   3    4   5   6    7   8   9"
+        top = "  ========================================="
+        row_sep = "  || --------- || --------- || --------- ||"
+        col_sep = "||"
+        num_sep = "|"
+        row_num = -1
+        col_num = -1
+        print()
+        if title is not None:
+            print(title)
+        print(header)
+        print(top)
+        for s in SQUARES:
+            c = int(s % 9)
+            r = int(s / 9)
+            if c == 0:
+                print(f'{chr(ord("A") + r)} {col_sep}', end="")
+
+                index = r + c
+                if what[index] == 0:
+                    print("  ", end="")
+                else:
+                    print(f" {what[index]}", end="")
+                if (col_num - 1) % 3 == 0:
+                    print(f" {col_sep}", end="")
+                else:
+                    print(f" {num_sep}", end="")
+                col_num += 1
+            row_num += 1
+            print()
+            if row_num == 8:
+                print(top)
+            elif (row_num + 1) % 3 == 0:
+                print(row_sep)
 
 #     def print_allowable_values(self):
 #         """prints a formatted representation of a puzzle

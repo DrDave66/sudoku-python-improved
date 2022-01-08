@@ -3,6 +3,7 @@ import cProfile
 import re
 from puzzles import Puzzles
 from sudoku import Sudoku
+from constants import *
 
 
 # def solve_one_puzzle(filename, num=None) -> None:
@@ -174,15 +175,30 @@ from sudoku import Sudoku
 #     percent = float(failed) / float(n) * 100.0
 #     solve_time = time.perf_counter() - start
 #     print(f"Solved {success} of {n} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter()-start:.3f} sec, {solve_time/ps.get_number_of_puzzles()*1000:.4f} msec per puzzle")
-def square_to_text(s:int) -> str:
-    r = s % 9
-    c = s / 9
-    return char(ord("A") + r) + char(ord("1") + c)
+
+
+def square_to_text(sq: int) -> str:
+    c = int(sq % 9)
+    r = int(sq / 9)
+    return chr(ord("A") + r) + chr(ord("1") + c)
 
 if __name__ == "__main__":
+    grid1 = "..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3.."
+    grid3 = "8.2.5.7.1..7.8246..1.9.....6....18325.......91843....6.....4.2..9561.3..3.8.9.6.7"
+    # not solved with ones / peers
+    need_guess = ".61.2.....4.6.59..392...5.882...9..74....3......48...3..7..21...1..7....98..146.2"
+    easy505 = "1..92....524.1...........7..5...81.2.........4.27...9..6...........3.945....71..6"
+    grid2 = "4.....8.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......"
+    hard1 = ".....6....59.....82....8....45........3........6..3.54...325..6.................."
+    easy506 = ".43.8.25.6.............1.949....4.7....6.8....1.2....382.5.............5.34.9.71."
+    blank = "................................................................................."
+    # solved
+    solved1 = "431829765276513984598467312389251647642378591157946238964785123723194856815632479"
+    solved2 = "687942351591376284342158769465239178138567942279814635853791426924683517716425893"
+    solved3 = "523846917961537428487219653154693782632478195798152346879324561316985274245761839"
     s = Sudoku()
-    for s in s.squares:
-        print(square_to_text(s))
+    s.set_puzzle(grid1)
+    print(s.get_puzzle_text())
     # # start = time.perf_counter()
     # # solve_all_threads(Puzzles.puzzle_100000)
     # # print(f"done {time.perf_counter() - start:.4} seconds")
