@@ -24,12 +24,13 @@ class Puzzles:
         cols = "123456789"
         rows = "ABCDEFGHI"
         if filename is None:
-            filename = self._100Failed1
-        print(f"Loading file {filename}")
+            filename = self.puzzle_1000
+        print(f"Loading file {filename}", end="")
         self._squares = [a + b for a in rows for b in cols]
         pf = text_file.TextFile(filename)
         self._puzzles = pf.readlines()
         pf.close()
+        print(f" - loaded {self.get_number_of_puzzles()} puzzles")
 
     def get_number_of_puzzles(self):
         return len(self._puzzles)

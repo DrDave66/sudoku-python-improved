@@ -50,25 +50,27 @@ from constants import *
 #     average_time = float(solve_time) / float(len(puzzle_range))
 #     print(f"Solved = {solved}, Unsolved = {unsolved}, Time = {solve_time:.4f} ms, Average time {average_time:.4f} msec")
 
-# def solve_all_no_stats(filename: str) -> None:
-#     ps = Puzzles(filename)
-#     p = Puzzle()
-#     success = 0
-#     failed = 0
-#     start = time.perf_counter(list())
-#     n = ps.get_number_of_puzzles()
-#     i = 0
-#     for i in range(n):
-#         p.set_puzzle(ps.get_puzzle(i))
-#         p.solve_puzzle()
+def solve_all_no_stats(filename: str) -> None:
+    ps = Puzzles(filename)
+    s = Sudoku()
+    success = 0
+    failed = 0
+    start = time.perf_counter()
+    n = ps.get_number_of_puzzles()
+    i = 0
+    for i in range(n):
+        s.set_puzzle(ps.get_puzzle(i))
+        s.solve_puzzle()
 
-#         if p.is_puzzle_solved():
-#             success += 1
-#         else:
-#             failed += 1
-#     percent = float(failed) / float(i+1) * 100.0
-#     solve_time = time.perf_counter() - start
-#     print(f"Solved {success} of {i+1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter()-start:.3f} sec, {solve_time/ps.get_number_of_puzzles()*1000:.4f} msec per puzzle")
+        if s.is_puzzle_solved():
+            success += 1
+        else:
+            failed += 1
+        if i % 10000 == 0:
+            print(i)
+    percent = float(failed) / float(i+1) * 100.0
+    solve_time = time.perf_counter() - start
+    print(f"Solved {success} of {i+1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter()-start:.3f} sec, {solve_time/ps.get_number_of_puzzles()*1000:.4f} msec per puzzle")
 
 
 # def solve_all_with_stats(filename: str, save_failures:bool =False, usemod:int =0) -> None:
@@ -231,33 +233,42 @@ if __name__ == "__main__":
         ps = pstats.Stats(statsName)
         ps.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
     else:
-        ps = Puzzles("../sudoku-puzzles/Guesses.txt")
-        # ps = Puzzles(Puzzles.puzzle_10000)
-        s = Sudoku()
-        success = 0
-        failed = 0
-        solve_time = 0
-        guessed = 0
-        total_start = time.perf_counter()
-        for i in range(1000):
-            s.set_puzzle(ps.get_puzzle(i))
-            if i % 100 == 0:
-                print(i)
-            start = time.perf_counter()
-            if s.solve_puzzle() is True:
-                success += 1
-            else:
-                failed += 1
-            solve_time += time.perf_counter() - start
-            # if s.number_of_guesses > 0:
-            #     guessed += 1
-            #     print(f"Guessed {i}")
-        percent = float(failed) / float(i + 1) * 100.0
+        solve_all_no_stats("../../sudoku-puzzles/1MP.txt")
+        # ps = Puzzles("../sudoku-puzzles/Guesses.txt")
+        # # ps = Puzzles(Puzzles.puzzle_10000)
+        # s = Sudoku()
+        # success = 0
+        # failed = 0
+        # solve_time = 0
+        # guessed = 0
+        # total_start = time.perf_counter()
+        # for i in range(ps.get_number_of_puzzles()):
+        #     s.set_puzzle(ps.get_puzzle(i))
+        #     if i % 100 == 0:
+        #         print(i)
+        #     start = time.perf_counter()
+        #     if s.solve_puzzle() is True:
+        #         success += 1
+        #     else:
+        #         failed += 1
+        #     solve_time += time.perf_counter() - start
+        #     if s.number_of_guesses > 0:
+        #         guessed += 1
+        #     #     print(f"Guessed {i}")
+        # percent = float(failed) / float(i + 1) * 100.0
+        #
+        # print(f"Solved {success} of {i + 1} puzzles, {failed} unsolved -> {percent:.3f}% in "
+        #       f"{(time.perf_counter() - total_start):.3f} sec, "
+        #       f"{solve_time / ps.get_number_of_puzzles() * 1000:.4f} msec per puzzle",
+        #       f"{guessed} puzzles needed guesses")
 
-        print(f"Solved {success} of {i + 1} puzzles, {failed} unsolved -> {percent:.3f}% in "
-              f"{(time.perf_counter() - total_start):.3f} sec, "
-              f"{solve_time / ps.get_number_of_puzzles() * 1000:.4f} msec per puzzle",
-              f"{guessed} puzzles needed guesses")
+
+# old sudoku
+# Solved 1000000 of 1000000 puzzles, 0 unsolved -> 0.000% in 1069.381 sec, 1.0694 msec per puzzle
+# Solved 204989 of 204989 puzzles, 0 unsolved -> 0.000% in 2640.819 sec, 12.8827 msec per puzzle
+# "improved" sudoku
+# Solved 1000000 of 1000000 puzzles, 0 unsolved -> 0.000% in 697.132 sec, 0.6971 msec per puzzle
+# Solved 204989 of 204989 puzzles, in 5617.260 sec, 27.2197 msec per puzzle 204989 puzzles needed guesses
 # # start = time.perf_counter()
 # # solve_all_threads(Puzzles.puzzle_100000)
 # # print(f"done {time.perf_counter() - start:.4} seconds")
