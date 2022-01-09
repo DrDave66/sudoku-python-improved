@@ -3,13 +3,14 @@ import random
 from constants import *
 from io import StringIO
 import sys
-
+import copy
 
 
 class Sudoku:
     puzzle = [ALLCLEAR for s1 in SQUARES]
     allowable_values = [ALLSET for s2 in SQUARES]
     guess_list = list()
+    number_of_guesses = 0
 
     def __init__(self, puzz_text: str = None) -> None:
         """
@@ -17,7 +18,6 @@ class Sudoku:
         :param puzz_text: (str) a puzzle string
         """
         self.clear_puzzle()
-        print(self.get_puzzle_text())
         if puzz_text is not None:
             file_ok = True
             # check to make sure puzz is a correctly formated string
@@ -62,29 +62,29 @@ class Sudoku:
             self.allowable_values[p] &= ~bm
         return True
 
-# ################################################################################
-# utility functions
-# ################################################################################
+    # ################################################################################
+    # utility functions
+    # ################################################################################
 
-    @staticmethod
-    def bitmask_to_string(bm: int) -> str:
-        if bm == ALLCLEAR:
-            return "."
-        for i in range(9):
-            if bm & BITMASK[i] != 0:
-                return chr(ord('1') + i)
-
-    def get_puzzle_text(self) -> str:
-        return "".join(self.bitmask_to_string(self.puzzle[s]) for s in SQUARES)
+    # @staticmethod
+    # def bitmask_to_string(bm: int) -> str:
+    #     if bm == ALLCLEAR:
+    #         return "."
+    #     for i in range(9):
+    #         if bm & BITMASK[i] != 0:
+    #             return chr(ord('1') + i)
+    #
+    # def get_puzzle_text(self) -> str:
+    #     return "".join(self.bitmask_to_string(self.puzzle[s]) for s in SQUARES)
 
     def get_number_of_open_squares(self):
         num = 0
         for s in SQUARES:
-            if len(self.allowable_values[s] != ALLCLEAR):
+            if self.allowable_values[s] != ALLCLEAR:
                 num += 1
         return num
 
-    def bitmask_to_value(self,  num: int) -> str:
+    def bitmask_to_value(self, num: int) -> str:
         retval = ""
         if num == BITMASK[9]:
             return "."
@@ -93,11 +93,11 @@ class Sudoku:
         if self.number_of_bits_set(num) == 1:
             for i in range(9):
                 if num >> i & 1 != 0:
-                    return f" {i+1}"
+                    return f" {i + 1}"
         else:
             for i in range(9):
                 if num & BITMASK[i] != 0:
-                    retval += f"{i+1}"
+                    retval += f"{i + 1}"
         return retval
 
     @staticmethod
@@ -114,10 +114,9 @@ class Sudoku:
         #     stop = (num != 0)
         # return result
 
-
-# ################################################################################
-# # puzzle printing functions
-# ################################################################################
+    # ################################################################################
+    # # puzzle printing functions
+    # ################################################################################
 
     def pretty_print(self, what, title=None):
         """prints a formatted representation of a puzzle
@@ -136,7 +135,7 @@ class Sudoku:
         for r in range(9):
             print(f'{chr(ord("A") + r)} {col_sep}', end="")
             for c in range(9):
-                index = r*9 + c
+                index = r * 9 + c
                 if what[index] == ALLCLEAR:
                     print(" .", end="")
                 else:
@@ -171,12 +170,12 @@ class Sudoku:
         for r in range(9):
             print(f'{chr(ord("A") + r)} {col_sep}', end="")
             for c in range(9):
-                index = r*9 + c
+                index = r * 9 + c
                 if what[index] == ALLCLEAR:
                     print("          ", end="")
                 else:
                     print(f" {self.bitmask_to_value(what[index]):9}", end="")
-                if (col_num-1) % 3 == 0:
+                if (col_num - 1) % 3 == 0:
                     print(f" {col_sep}", end="")
                 else:
                     print(f" {num_sep}", end="")
@@ -188,10 +187,6 @@ class Sudoku:
             elif (row_num + 1) % 3 == 0:
                 print(row_sep)
         print()
-
-    # def print_number_of_available_values(self):
-    #     nv = [BITMASK[self.number_of_bits_set(self.allowable_values[s])-2 ] for s in SQUARES]
-    #     self.pretty_print(nv, "------ Number of Allowable Values ------")
 
     def print_puzzle(self, title: str = None):
         self.pretty_print(self.puzzle, title)
@@ -212,12 +207,9 @@ class Sudoku:
         for l in range(len(pout_lines)):
             print(pout_lines[l] + "   " + vout_lines[l])
 
-
-
-
-# ################################################################################
-# # puzzle solving functions
-# ################################################################################
+    # ################################################################################
+    # # puzzle solving functions
+    # ################################################################################
 
     def solve_ones(self):
         set_some = True
@@ -225,23 +217,25 @@ class Sudoku:
             while set_some:
                 # self.print_puzzle_and_allowable_values()
                 set_some = False
-                with_one = [s for s in SQUARES if self.number_of_bits_set(self.allowable_values[s]) == 1]
-                if len(with_one) > 0:
-                    for s in with_one:
-                        if self.allowable_values[s] != "":
-                            self.set_value(s, self.allowable_values[s])
-                            set_some = True
+                # with_one = [s for s in SQUARES if self.number_of_bits_set(self.allowable_values[s]) == 1]
+                for s in SQUARES:
+                    if self.number_of_bits_set(self.allowable_values[s]) == 1:
+                        self.set_value(s, self.allowable_values[s])
+                        set_some = True
+
             # look in each unit and see if any value appears only one time
             # create a list of all allowable values in a unit (rol, col, square)
             if self.is_puzzle_solved():
                 return
-#            self.print_puzzle_and_allowable_values()
+            #            self.print_puzzle_and_allowable_values()
             for ul in UNITLIST:
                 for b in BITS:
                     bit_count = 0
                     for s in ul:
                         if self.allowable_values[s] & BITMASK[b] != 0:
                             bit_count += 1
+                        if bit_count > 1:
+                            continue
                     if bit_count == 1:
                         for s in ul:
                             if self.allowable_values[s] & BITMASK[b] != 0:
@@ -252,7 +246,6 @@ class Sudoku:
         # def unitsolved(unit): return set(self.puzzle[s] for s in unit) == set(self.digits)
         # return all(unitsolved(unit) for unit in self.unitlist)
         # A puzzle is solved if each unit is a permutation of the digits 1 to 9.
-
         for u in UNITLIST:
             oreo = 0
             for s in u:
@@ -265,72 +258,89 @@ class Sudoku:
         # and do that for each unitlist
         # return all(set(self.puzzle[u] for u in ul) == set(self.digits) for ul in self.unitlist)
 
-#     def remove_guess(self, square: str, value: str):
-#         self.allowable_values[square] = self.allowable_values[square].replace(value, "")
+    def remove_guess(self, sq: int, bm: int):
+        self.allowable_values[sq] &= ~bm
 
-#     def guesses_remain(self) -> bool:
-#         for s in self.squares:
-#             if len(set(self.digits) - set(self.allowable_values[s])) < 9:
-#                 return True
-#         return False
+    def guesses_remain(self) -> bool:
+        retval = 0
+        for s in SQUARES:
+            if self.allowable_values[s] != ALLCLEAR:
+                return True
+        return False
 
+    def get_guess(self) -> Guess:
+        self.number_of_guesses += 1
+        min_number = min(self.number_of_bits_set(self.allowable_values[s])
+                         for s in SQUARES if self.allowable_values[s] > 0)
+        # min_number = min(len(self.allowable_values[s]) for s in self.squares if len(self.allowable_values[s]) > 0)
+        subset = [s for s in SQUARES if self.number_of_bits_set(self.allowable_values[s]) == min_number]
+        square = self.get_one_of(subset)
+        guess = self.get_guess_value(square)
+        return Guess(self.puzzle, self.allowable_values, square, guess)
 
-#     def get_guess(self):
-#         min_number = min(len(self.allowable_values[s]) for s in self.squares if len(self.allowable_values[s]) > 0)
-#         subset = [s for s in self.squares if len(self.allowable_values[s]) == min_number]
-#         square = self.get_one_of(subset)
-#         guess = self.get_one_of(self.allowable_values[square])
-#         return guess, square
+    def get_guess_value(self, sq: int) -> int:
+        bit = list()
+        for b in BITS:
+            if self.allowable_values[sq] & BITMASK[b] != 0:
+                bit.append(BITMASK[b])
+        return self.get_one_of(bit)
 
-#     def pop_guess(self):
-#         # pop off last guess
-#         lg = self.guess_list.pop()
-#         # replace teh puzzle from before the last guess
-#         self.unpack_puzzle(lg.puzzle_string)
-#         # remove the last guess from list of available guesses
-#         self.remove_guess(lg.square, lg.guess)
+    def pop_guess(self):
+        # pop off last guess
+        lg = self.guess_list.pop()
+        # replace teh puzzle from before the last guess
+        self.puzzle = copy.deepcopy(lg.puzzle)
+        self.allowable_values = copy.deepcopy(lg.allowable_values)
+        # remove the last guess from list of available guesses
+        self.remove_guess(lg.square, lg.guess)
 
-#     def start_guessing(self):
-#         # max_depth = 0
-#         # dead_ends = 0
-#         self.guess_list = []
-#         while not self.is_puzzle_solved():
-#             while self.guesses_remain():
-#                 num, square = self.get_guess()
-#                 guess = self.get_one_of(self.allowable_values[square])
-#                 d = Guess(self.get_packed_puzzle(), square, guess)
-#                 self.guess_list.append(d)
-#                 self.set_value(square, guess)
-#                 self.solve_ones()
-#                 # max_depth = max(max_depth,len(self.guess_list))
-#                 if not self.is_puzzle_solved() and not self.guesses_remain():
-#                     self.pop_guess()
-#             if not self.is_puzzle_solved():
-#                 # dead_ends += 1
-#                 # print("dead end")
-#                 # if we get here, we ran out of guesses.  so.....
-#                 # pop an extra guess off of the stack and continue
-#                 self.pop_guess()
+    def push_guess(self, g: Guess):
+        self.guess_list.append(g)
 
-#     @staticmethod
-#     def get_one_of(seq):
-#         return random.choice(seq)
+    def start_guessing(self):
+        # max_depth = 0
+        # dead_ends = 0
+        self.number_of_guesses = 0
+        self.guess_list = []
+        while not self.is_puzzle_solved():
+            while self.guesses_remain():
+                guess = self.get_guess()
+                self.push_guess(guess)
+                self.set_value(guess.square, guess.guess)
+                self.solve_ones()
+                # max_depth = max(max_depth,len(self.guess_list))
+                if not self.is_puzzle_solved() and not self.guesses_remain():
+                    self.pop_guess()
+            if not self.is_puzzle_solved():
+                # dead_ends += 1
+                # print("dead end")
+                # if we get here, we ran out of guesses.  so.....
+                # pop an extra guess off of the stack and continue
+                self.pop_guess()
 
-#     @staticmethod
-#     def shuffled(seq):
-#         # Return a randomly shuffled copy of the input sequence.
-#         seq = list(seq)
-#         random.shuffle(seq)
-#         return seq
+    @staticmethod
+    def get_one_of(seq):
+        if type(seq) is int:
+            # pick one of bits set
+            bs = list()
+            bs.append(BITMASK[b] for b in BITS if BITMASK[b] & seq != 0)
+            return random.choice(bs)
+        return random.choice(seq)
 
-#     def solve_puzzle(self) -> bool:
+    def solve_puzzle(self) -> bool:
+        self.solve_ones()
+        if self.is_puzzle_solved():
+            return True
+        else:
+            self.start_guessing()
+            return self.is_puzzle_solved()
 
-#         self.solve_ones()
-#         if self.is_puzzle_solved():
-#             return True
-#         else:
-#             self.start_guessing()
-#             return self.is_puzzle_solved()
+    # @staticmethod
+    # def shuffled(seq):
+    #     # Return a randomly shuffled copy of the input sequence.
+    #     seq = list(seq)
+    #     random.shuffle(seq)
+    #     return seq
 
 #     def random_puzzle(self, n=17):
 #         # self.allowable = dict((s, self.digits) for s in self.squares)

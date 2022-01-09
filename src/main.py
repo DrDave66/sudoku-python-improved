@@ -187,8 +187,8 @@ def quick_solve(s, p):
     solved = 0
     solve_time = 0
     total_start = time.perf_counter()
-    for i in range(p.get_number_of_puzzles()):
-        s.set_puzzle(p.get_puzzle(i))
+    for ii in range(p.get_number_of_puzzles()):
+        s.set_puzzle(p.get_puzzle(ii))
         # s.print_puzzle_and_allowable_values()
         start = time.perf_counter()
         s.solve_ones()
@@ -196,11 +196,12 @@ def quick_solve(s, p):
         if s.is_puzzle_solved():
             solved += 1
 
-        if (i+1) % 10000 == 0:
-            print(f"{i+1} - {solved}")
+        if (ii + 1) % 10000 == 0:
+            print(f"{ii + 1} - {solved}")
     total_time = time.perf_counter() - total_start
     print(
-        f"Solved {solved} of {p.get_number_of_puzzles()} puzzles,  {total_time:.3f} sec total, {solve_time / p.get_number_of_puzzles() * 1000:.4f} msec per puzzle")
+        f"Solved {solved} of {p.get_number_of_puzzles()} puzzles,  {total_time:.3f} sec total,"
+        f" {solve_time / p.get_number_of_puzzles() * 1000:.4f} msec per puzzle")
 
 
 if __name__ == "__main__":
@@ -218,77 +219,101 @@ if __name__ == "__main__":
     solved1 = "431829765276513984598467312389251647642378591157946238964785123723194856815632479"
     solved2 = "687942351591376284342158769465239178138567942279814635853791426924683517716425893"
     solved3 = "523846917961537428487219653154693782632478195798152346879324561316985274245761839"
-    s = Sudoku()
-    p = Puzzles(Puzzles.puzzle_100000)
-    statsName = "test.stats"
-    cProfile.run('quick_solve(s, p)',statsName)
-    import pstats
-    from pstats import SortKey
-    ps = pstats.Stats(statsName)
-    ps.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
-    # for i in SQUARES:
-    #     print(f"{i:03} - {i:010b} - {s.number_of_bits_set(i)}")
+    profiling = False
+    if profiling:
+        s = Sudoku()
+        p = Puzzles(Puzzles.puzzle_10000)
+        statsName = "test.stats"
+        cProfile.run('quick_solve(s, p)', statsName)
+        import pstats
+        from pstats import SortKey
 
+        ps = pstats.Stats(statsName)
+        ps.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
+    else:
+        ps = Puzzles("../sudoku-puzzles/Guesses.txt")
+        # ps = Puzzles(Puzzles.puzzle_10000)
+        s = Sudoku()
+        success = 0
+        failed = 0
+        solve_time = 0
+        guessed = 0
+        total_start = time.perf_counter()
+        for i in range(1000):
+            s.set_puzzle(ps.get_puzzle(i))
+            if i % 100 == 0:
+                print(i)
+            start = time.perf_counter()
+            if s.solve_puzzle() is True:
+                success += 1
+            else:
+                failed += 1
+            solve_time += time.perf_counter() - start
+            # if s.number_of_guesses > 0:
+            #     guessed += 1
+            #     print(f"Guessed {i}")
+        percent = float(failed) / float(i + 1) * 100.0
 
-    # # start = time.perf_counter()
-    # # solve_all_threads(Puzzles.puzzle_100000)
-    # # print(f"done {time.perf_counter() - start:.4} seconds")
-    # ps = Puzzles(Puzzles.puzzle_1m)
-    # p = Puzzle()
-    # success = 0
-    # failed = 0
-    # start = time.perf_counter()
-    # for i in range(ps.get_number_of_puzzles()):
-    #     p.set_puzzle(ps.get_puzzle(i))
-    #     if i%1000 == 0:
-    #         print(i)
-    #     if p.solve_puzzle() is True:
-    #         success += 1
-    #     else:
-    #         failed += 1
-    # percent = float(failed) / float(i + 1) * 100.0
-    # solve_time = time.perf_counter() - start
-    # print(
-    #     f"Solved {success} of {i + 1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter() - start:.3f} sec, {solve_time / ps.get_number_of_puzzles() * 1000:.4f} msec per puzzle")
+        print(f"Solved {success} of {i + 1} puzzles, {failed} unsolved -> {percent:.3f}% in "
+              f"{(time.perf_counter() - total_start):.3f} sec, "
+              f"{solve_time / ps.get_number_of_puzzles() * 1000:.4f} msec per puzzle",
+              f"{guessed} puzzles needed guesses")
+# # start = time.perf_counter()
+# # solve_all_threads(Puzzles.puzzle_100000)
+# # print(f"done {time.perf_counter() - start:.4} seconds")
 
- #   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
- #  8100000   45.112    0.000   45.112    0.000 sudoku.py:53(set_value)
- # 49312233   18.161    0.000   18.161    0.000 sudoku.py:103(number_of_bits_set)
- #   608793   17.674    0.000   35.835    0.000 sudoku.py:224(<listcomp>)
- #   200027    9.119    0.000    9.119    0.000 sudoku.py:247(is_puzzle_solved)
- #   100000    4.134    0.000   25.471    0.000 sudoku.py:36(set_puzzle)
- #   100000    3.586    0.000   70.332    0.001 sudoku.py:218(solve_ones)
- #   100000    2.162    0.000    2.162    0.000 sudoku.py:48(clear_puzzle)
- #        1    0.378    0.378  100.716  100.716 main.py:186(quick_solve)
- #   808796    0.222    0.000    0.222    0.000 {built-in method builtins.len}
- #   100000    0.076    0.000    0.136    0.000 puzzles.py:37(get_puzzle)
- #   200002    0.049    0.000    0.049    0.000 {built-in method time.perf_counter}
- #   100003    0.044    0.000    0.060    0.000 puzzles.py:34(get_number_of_puzzles)
- #       11    0.000    0.000    0.000    0.000 {built-in method builtins.print}
- #        1    0.000    0.000  100.716  100.716 {built-in method builtins.exec}
- #        1    0.000    0.000  100.716  100.716 <string>:1(<module>)
- #        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+#   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+#  8100000   45.112    0.000   45.112    0.000 sudoku.py:53(set_value)
+# 49312233   18.161    0.000   18.161    0.000 sudoku.py:103(number_of_bits_set)
+#   608793   17.674    0.000   35.835    0.000 sudoku.py:224(<listcomp>)
+#   200027    9.119    0.000    9.119    0.000 sudoku.py:247(is_puzzle_solved)
+#   100000    4.134    0.000   25.471    0.000 sudoku.py:36(set_puzzle)
+#   100000    3.586    0.000   70.332    0.001 sudoku.py:218(solve_ones)
+#   100000    2.162    0.000    2.162    0.000 sudoku.py:48(clear_puzzle)
+#        1    0.378    0.378  100.716  100.716 main.py:186(quick_solve)
+#   808796    0.222    0.000    0.222    0.000 {built-in method builtins.len}
+#   100000    0.076    0.000    0.136    0.000 puzzles.py:37(get_puzzle)
+#   200002    0.049    0.000    0.049    0.000 {built-in method time.perf_counter}
+#   100003    0.044    0.000    0.060    0.000 puzzles.py:34(get_number_of_puzzles)
+#       11    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+#        1    0.000    0.000  100.716  100.716 {built-in method builtins.exec}
+#        1    0.000    0.000  100.716  100.716 <string>:1(<module>)
+#        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 
 # bit hack to count bits
- #   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
- #  8100000   41.724    0.000   41.724    0.000 sudoku.py:53(set_value)
- #   608793   19.712    0.000   37.271    0.000 sudoku.py:228(<listcomp>)
- # 49312233   17.558    0.000   17.558    0.000 sudoku.py:103(number_of_bits_set)
- #   200027    9.139    0.000    9.139    0.000 sudoku.py:251(is_puzzle_solved)
- #   100000    4.039    0.000   23.649    0.000 sudoku.py:36(set_puzzle)
- #   100000    3.440    0.000   69.537    0.001 sudoku.py:222(solve_ones)
- #   100000    2.043    0.000    2.043    0.000 sudoku.py:48(clear_puzzle)
- #        1    0.365    0.365   98.367   98.367 main.py:186(quick_solve)
- #   808796    0.176    0.000    0.176    0.000 {built-in method builtins.len}
- #   100000    0.076    0.000    0.180    0.000 puzzles.py:37(get_puzzle)
- #   200002    0.052    0.000    0.052    0.000 {built-in method time.perf_counter}
- #   100003    0.043    0.000    0.104    0.000 puzzles.py:34(get_number_of_puzzles)
- #       11    0.000    0.000    0.000    0.000 {built-in method builtins.print}
- #        1    0.000    0.000   98.367   98.367 {built-in method builtins.exec}
- #        1    0.000    0.000   98.367   98.367 <string>:1(<module>)
- #        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+#   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+#  8100000   41.724    0.000   41.724    0.000 sudoku.py:53(set_value)
+#   608793   19.712    0.000   37.271    0.000 sudoku.py:228(<listcomp>)
+# 49312233   17.558    0.000   17.558    0.000 sudoku.py:103(number_of_bits_set)
+#   200027    9.139    0.000    9.139    0.000 sudoku.py:251(is_puzzle_solved)
+#   100000    4.039    0.000   23.649    0.000 sudoku.py:36(set_puzzle)
+#   100000    3.440    0.000   69.537    0.001 sudoku.py:222(solve_ones)
+#   100000    2.043    0.000    2.043    0.000 sudoku.py:48(clear_puzzle)
+#        1    0.365    0.365   98.367   98.367 main.py:186(quick_solve)
+#   808796    0.176    0.000    0.176    0.000 {built-in method builtins.len}
+#   100000    0.076    0.000    0.180    0.000 puzzles.py:37(get_puzzle)
+#   200002    0.052    0.000    0.052    0.000 {built-in method time.perf_counter}
+#   100003    0.043    0.000    0.104    0.000 puzzles.py:34(get_number_of_puzzles)
+#       11    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+#        1    0.000    0.000   98.367   98.367 {built-in method builtins.exec}
+#        1    0.000    0.000   98.367   98.367 <string>:1(<module>)
+#        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 
-
- bit hack to count bits
-
-
+#10k removed big loop comprehension
+# Solved 10000 of 10000 puzzles,  7.509 sec total, 0.4997 msec per puzzle
+#    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+#    810000    3.756    0.000    3.756    0.000 sudoku.py:53(set_value)
+#     10000    1.252    0.000    4.987    0.000 sudoku.py:222(solve_ones)
+#   3476034    1.156    0.000    1.156    0.000 sudoku.py:103(number_of_bits_set)
+#     20003    0.790    0.000    0.790    0.000 sudoku.py:251(is_puzzle_solved)
+#     10000    0.343    0.000    2.085    0.000 sudoku.py:36(set_puzzle)
+#     10000    0.165    0.000    0.165    0.000 sudoku.py:48(clear_puzzle)
+#         1    0.028    0.028    7.509    7.509 main.py:186(quick_solve)
+#     10000    0.007    0.000    0.013    0.000 puzzles.py:37(get_puzzle)
+#     20002    0.005    0.000    0.005    0.000 {built-in method time.perf_counter}
+#     10003    0.004    0.000    0.006    0.000 puzzles.py:34(get_number_of_puzzles)
+#     20003    0.003    0.000    0.003    0.000 {built-in method builtins.len}
+#         1    0.000    0.000    7.509    7.509 {built-in method builtins.exec}
+#         2    0.000    0.000    0.000    0.000 {built-in method builtins.print}
+#         1    0.000    0.000    7.509    7.509 <string>:1(<module>)
+#         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
