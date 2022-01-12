@@ -289,13 +289,18 @@ class Sudoku:
         # pop off last guess
         lg = self.guess_list.pop()
         # replace teh puzzle from before the last guess
-        self.puzzle = copy.deepcopy(lg.puzzle)
-        self.allowable_values = copy.deepcopy(lg.allowable_values)
+        # self.puzzle = copy.deepcopy(lg.puzzle)
+        self.puzzle = lg.puzzle[:]
+        self.allowable_values = lg.allowable_values[:]
+        # for i in range(81):
+        #     self.puzzle[i] = lg.puzzle[i]
+        #     self.allowable_values[i] = lg.allowable_values[i]
         # remove the last guess from list of available guesses
         self.remove_guess(lg.square, lg.guess)
 
     def push_guess(self, g: Guess):
         self.guess_list.append(g)
+        # print(self.guess_list)
 
     def start_guessing(self):
         # max_depth = 0

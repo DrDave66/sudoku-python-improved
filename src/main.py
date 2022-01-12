@@ -1,6 +1,7 @@
 import time
 import cProfile
 import re
+import sys
 from puzzles import Puzzles
 from sudoku import Sudoku
 from constants import *
@@ -55,22 +56,24 @@ def solve_all_no_stats(filename: str) -> None:
     s = Sudoku()
     success = 0
     failed = 0
-    start = time.perf_counter()
     n = ps.get_number_of_puzzles()
     i = 0
+    solve_time = 0.0
+    total_start = time.perf_counter()
+    start = time.perf_counter()
     for i in range(n):
         s.set_puzzle(ps.get_puzzle(i))
+        solve_start = time.perf_counter()
         s.solve_puzzle()
-
+        solve_time += time.perf_counter() - solve_start
         if s.is_puzzle_solved():
             success += 1
         else:
             failed += 1
-        if i % 10000 == 0:
+        if i % (n/100) == 0:
             print(i)
     percent = float(failed) / float(i+1) * 100.0
-    solve_time = time.perf_counter() - start
-    print(f"Solved {success} of {i+1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter()-start:.3f} sec, {solve_time/ps.get_number_of_puzzles()*1000:.4f} msec per puzzle")
+    print(f"Solved {success} of {i+1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter() - total_start:.3f} sec, {solve_time/ps.get_number_of_puzzles()*1000:.4f} msec per puzzle")
 
 
 # def solve_all_with_stats(filename: str, save_failures:bool =False, usemod:int =0) -> None:
@@ -222,18 +225,31 @@ if __name__ == "__main__":
     solved2 = "687942351591376284342158769465239178138567942279814635853791426924683517716425893"
     solved3 = "523846917961537428487219653154693782632478195798152346879324561316985274245761839"
     profiling = False
-    if profiling:
-        s = Sudoku()
-        p = Puzzles(Puzzles.puzzle_10000)
-        statsName = "test.stats"
-        cProfile.run('quick_solve(s, p)', statsName)
-        import pstats
-        from pstats import SortKey
-
-        ps = pstats.Stats(statsName)
-        ps.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
+    # if profiling:
+    #     s = Sudoku()
+    #     p = Puzzles(Puzzles.puzzle_10000)
+    #     statsName = "test.stats"
+    #     cProfile.run('quick_solve(s, p)', statsName)
+    #     import pstats
+    #     from pstats import SortKey
+    #
+    #     ps = pstats.Stats(statsName)
+    #     ps.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
+    # else:
+    if len(sys.argv) >= 2:
+        if len(sys.argv) == 3:
+            statsName = sys.argv[2]
+            cmd = "solve_all_no_stats('" + sys.argv[1] + "')"
+            cProfile.run(cmd, statsName)
+            import pstats
+            from pstats import SortKey
+            p = pstats.Stats(statsName)
+            p.strip_dirs().sort_stats(SortKey.TIME).print_stats(15)
+        else:
+            solve_all_no_stats(sys.argv[1])
     else:
-        solve_all_no_stats("../../sudoku-puzzles/1MP.txt")
+        print("you must supply a puzzle file name. append stats filename to save stats")
+
         # ps = Puzzles("../sudoku-puzzles/Guesses.txt")
         # # ps = Puzzles(Puzzles.puzzle_10000)
         # s = Sudoku()
@@ -265,10 +281,10 @@ if __name__ == "__main__":
 
 # old sudoku
 # Solved 1000000 of 1000000 puzzles, 0 unsolved -> 0.000% in 1069.381 sec, 1.0694 msec per puzzle
-# Solved 204989 of 204989 puzzles, 0 unsolved -> 0.000% in 2640.819 sec, 12.8827 msec per puzzle
+# Solved 204989 of 204989 puzzles, 0 unsolved -> 0.000% in 2330.239 sec, 11.3676 msec per puzzle
 # "improved" sudoku
-# Solved 1000000 of 1000000 puzzles, 0 unsolved -> 0.000% in 697.132 sec, 0.6971 msec per puzzle
-# Solved 204989 of 204989 puzzles, in 5617.260 sec, 27.2197 msec per puzzle 204989 puzzles needed guesses
+# Solved 1000000 of 1000000 puzzles, 0 unsolved -> 0.000% in 619.789 sec, 0.6198 msec per puzzle
+#
 # # start = time.perf_counter()
 # # solve_all_threads(Puzzles.puzzle_100000)
 # # print(f"done {time.perf_counter() - start:.4} seconds")
