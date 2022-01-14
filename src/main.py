@@ -70,7 +70,7 @@ def solve_all_no_stats(filename: str) -> None:
             success += 1
         else:
             failed += 1
-        if i % (n/100) == 0:
+        if i % (n/50) == 0:
             print(i)
     percent = float(failed) / float(i+1) * 100.0
     print(f"Solved {success} of {i+1} puzzles, {failed} unsolved -> {percent:.3f}% in {time.perf_counter() - total_start:.3f} sec, {solve_time/ps.get_number_of_puzzles()*1000:.4f} msec per puzzle")
@@ -245,6 +245,8 @@ if __name__ == "__main__":
             from pstats import SortKey
             p = pstats.Stats(statsName)
             p.strip_dirs().sort_stats(SortKey.TIME).print_stats(15)
+            p.strip_dirs().sort_stats(SortKey.TIME).dump_stats(statsName)
+            print(f"Dumped stats to {statsName}")
         else:
             solve_all_no_stats(sys.argv[1])
     else:

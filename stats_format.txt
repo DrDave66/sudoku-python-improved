@@ -1,0 +1,26 @@
+Fri Jan 14 15:21:56 2022    ../stats.stats
+
+         4476435 function calls in 8.075 seconds
+
+   Ordered by: internal time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+   810000    3.747    0.000    3.747    0.000 sudoku.py:53(set_value)
+    10000    1.438    0.000    5.059    0.001 sudoku.py:216(solve_ones)
+    30003    1.188    0.000    1.188    0.000 sudoku.py:247(is_puzzle_solved)
+  
+  
+  00 - 30003
+01 - 1.188
+02 - 0.000
+03 - 1.188
+04 - 0.000
+05 - sudoku.py:247(is_puzzle_solved)
+
+00 - ncalls
+01 - tottime
+02 - percall
+03 - cumtime
+04 - percall
+05 - filename:lineno(function)
+
