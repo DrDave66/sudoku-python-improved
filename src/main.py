@@ -240,6 +240,8 @@ if __name__ == "__main__":
         if len(sys.argv) == 3:
             statsName = sys.argv[2]
             cmd = "solve_all_no_stats('" + sys.argv[1] + "')"
+            basename = sys.argv[1].split("/")[-1]
+            print(f"Basename is {basename}")
             cProfile.run(cmd, statsName)
             import pstats
             from pstats import SortKey
