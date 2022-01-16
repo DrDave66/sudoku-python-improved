@@ -1,10 +1,10 @@
 import time
 import cProfile
-import re
 import sys
 from puzzles import Puzzles
 from sudoku import Sudoku
-from constants import *
+from procStats import Stats
+
 
 
 # def solve_one_puzzle(filename, num=None) -> None:
@@ -243,8 +243,8 @@ if __name__ == "__main__":
             cProfile.run(cmd, statsName)
             import pstats
             from pstats import SortKey
-            p = pstats.Stats(statsName)
-            p.strip_dirs().sort_stats(SortKey.TIME).print_stats(15)
+            p = Stats(statsName)
+            p.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
             p.strip_dirs().sort_stats(SortKey.TIME).dump_stats(statsName)
             print(f"Dumped stats to {statsName}")
         else:

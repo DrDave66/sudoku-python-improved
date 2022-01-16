@@ -1,26 +1,65 @@
-Fri Jan 14 15:21:56 2022    ../stats.stats
+Sat Jan 15 11:55:55 2022    stats.stats
 
-         4476435 function calls in 8.075 seconds
+         44793795 function calls in 94.950 seconds
 
    Ordered by: internal time
+   List reduced from 38 to 15 due to restriction <15>
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-   810000    3.747    0.000    3.747    0.000 sudoku.py:53(set_value)
-    10000    1.438    0.000    5.059    0.001 sudoku.py:216(solve_ones)
-    30003    1.188    0.000    1.188    0.000 sudoku.py:247(is_puzzle_solved)
+  8100000   44.731    0.000   44.731    0.000 sudoku.py:53(set_value)
+   100000   15.490    0.000   59.328    0.001 sudoku.py:216(solve_ones)
+   300027   14.410    0.000   14.410    0.000 sudoku.py:247(is_puzzle_solved)
+ 34790634   12.962    0.000   12.962    0.000 sudoku.py:103(number_of_bits_set)
+   100000    4.231    0.000   25.163    0.000 sudoku.py:36(set_puzzle)
+   100001    2.041    0.000    2.041    0.000 sudoku.py:48(clear_puzzle)
+        1    0.407    0.407   94.948   94.948 main.py:54(solve_all_no_stats)
+   100001    0.193    0.000    0.287    0.000 text_file.py:152(readline)
+   100000    0.103    0.000    0.175    0.000 puzzles.py:38(get_puzzle)
+   100000    0.082    0.000   64.014    0.001 sudoku.py:337(solve_puzzle)
+   200003    0.054    0.000    0.054    0.000 {built-in method time.perf_counter}
+        1    0.051    0.051    0.349    0.349 text_file.py:272(readlines)
+   100003    0.050    0.000    0.071    0.000 puzzles.py:35(get_number_of_puzzles)
+   100001    0.038    0.000    0.041    0.000 {method 'readline' of '_io.TextIOWrapper' objects}
+   200003    0.037    0.000    0.037    0.000 {built-in method builtins.len}
+
   
   
-  00 - 30003
-01 - 1.188
-02 - 0.000
-03 - 1.188
-04 - 0.000
-05 - sudoku.py:247(is_puzzle_solved)
-
-00 - ncalls
-01 - tottime
-02 - percall
-03 - cumtime
-04 - percall
-05 - filename:lineno(function)
-
+('sudoku.py', 53, 'set_value') 8100000 8100000 44.730628818 44.730628818 {('sudoku.py', 36, 'set_puzzle'): (3381276, 3381276, 18.876610392, 18.876610392), ('sudoku.py', 216, 'solve_ones'): (4718724, 4718724, 25.854018426000003, 25.854018426000003)}
+('sudoku.py', 216, 'solve_ones') 100000 100000 15.490308147 59.328182126 {('sudoku.py', 337, 'solve_puzzle'): (100000, 100000, 15.490308147, 59.328182126)}
+('sudoku.py', 247, 'is_puzzle_solved') 300027 300027 14.410034992000002 14.410034992000002 {('sudoku.py', 216, 'solve_ones'): (100027, 100027, 5.022256506000001, 5.022256506000001), ('sudoku.py', 337, 'solve_puzzle'): (100000, 100000, 4.603290408, 4.603290408), ('main.py', 54, 'solve_all_no_stats'): (100000, 100000, 4.784488078, 4.784488078)}
+('sudoku.py', 103, 'number_of_bits_set') 34790634 34790634 12.961599047 12.961599047 {('sudoku.py', 216, 'solve_ones'): (34790634, 34790634, 12.961599047, 12.961599047)}
+('sudoku.py', 36, 'set_puzzle') 100000 100000 4.230815908 25.163452158000002 {('main.py', 54, 'solve_all_no_stats'): (100000, 100000, 4.230815908, 25.163452158000002)}
+('sudoku.py', 48, 'clear_puzzle') 100001 100001 2.0406110170000002 2.0406110170000002 {('sudoku.py', 36, 'set_puzzle'): (100000, 100000, 2.0405801820000002, 2.0405801820000002), ('sudoku.py', 15, '__init__'): (1, 1, 3.0835e-05, 3.0835e-05)}
+('main.py', 54, 'solve_all_no_stats') 1 1 0.407237636 94.947605044 {('<string>', 1, '<module>'): (1, 1, 0.407237636, 94.947605044)}
+('text_file.py', 152, 'readline') 100001 100001 0.192838364 0.28735834800000004 {('text_file.py', 272, 'readlines'): (100001, 100001, 0.192838364, 0.28735834800000004)}
+('puzzles.py', 38, 'get_puzzle') 100000 100000 0.103435864 0.17487342900000002 {('main.py', 54, 'solve_all_no_stats'): (100000, 100000, 0.103435864, 0.17487342900000002)}
+('sudoku.py', 337, 'solve_puzzle') 100000 100000 0.08213532000000001 64.013607854 {('main.py', 54, 'solve_all_no_stats'): (100000, 100000, 0.08213532000000001, 64.013607854)}
+('~', 0, '<built-in method time.perf_counter>') 200003 200003 0.053542817000000006 0.053542817000000006 {('main.py', 54, 'solve_all_no_stats'): (200003, 200003, 0.053542817000000006, 0.053542817000000006)}
+('text_file.py', 272, 'readlines') 1 1 0.051299106000000004 0.348807466 {('puzzles.py', 22, '__init__'): (1, 1, 0.051299106000000004, 0.348807466)}
+('puzzles.py', 35, 'get_number_of_puzzles') 100003 100003 0.050186926 0.07144336400000001 {('main.py', 54, 'solve_all_no_stats'): (2, 2, 1.2310000000000002e-06, 1.8400000000000002e-06), ('puzzles.py', 22, '__init__'): (1, 1, 3.52e-06, 3.9590000000000006e-06), ('puzzles.py', 38, 'get_puzzle'): (100000, 100000, 0.050182175, 0.07143756500000001)}
+('~', 0, "<method 'readline' of '_io.TextIOWrapper' objects>") 100001 100001 0.037945775 0.041396430000000005 {('text_file.py', 152, 'readline'): (100001, 100001, 0.037945775, 0.041396430000000005)}
+('~', 0, '<built-in method builtins.len>') 200003 200003 0.036702114 0.036702114 {('sudoku.py', 36, 'set_puzzle'): (100000, 100000, 0.015445676, 0.015445676), ('puzzles.py', 35, 'get_number_of_puzzles'): (100003, 100003, 0.021256438000000002, 0.021256438000000002)}
+('~', 0, "<method 'find' of 'str' objects>") 100000 100000 0.020271070000000002 0.020271070000000002 {('text_file.py', 152, 'readline'): (100000, 100000, 0.020271070000000002, 0.020271070000000002)}
+('~', 0, "<method 'rstrip' of 'str' objects>") 100000 100000 0.020135905000000003 0.020135905000000003 {('text_file.py', 152, 'readline'): (100000, 100000, 0.020135905000000003, 0.020135905000000003)}
+('~', 0, '<built-in method builtins.isinstance>') 100000 100000 0.012716579 0.012716579 {('text_file.py', 152, 'readline'): (100000, 100000, 0.012716579, 0.012716579)}
+('~', 0, "<method 'append' of 'list' objects>") 100000 100000 0.010150012 0.010150012 {('text_file.py', 272, 'readlines'): (100000, 100000, 0.010150012, 0.010150012)}
+('<string>', 1, '<module>') 1 1 0.00279158 94.950396624 {('~', 0, '<built-in method builtins.exec>'): (1, 1, 0.00279158, 94.950396624)}
+('~', 0, '<built-in method _codecs.utf_8_decode>') 1015 1015 0.0016266170000000001 0.0016266170000000001 {('codecs.py', 319, 'decode'): (1015, 1015, 0.0016266170000000001, 0.0016266170000000001)}
+('codecs.py', 319, 'decode') 1015 1015 0.0014205160000000001 0.003047133 {('~', 0, "<method 'readline' of '_io.TextIOWrapper' objects>"): (1015, 1015, 0.0014205160000000001, 0.003047133)}
+('~', 0, '<built-in method builtins.print>') 53 53 0.0013667730000000002 0.0013667730000000002 {('main.py', 54, 'solve_all_no_stats'): (51, 51, 0.001334827, 0.001334827), ('puzzles.py', 22, '__init__'): (2, 2, 3.1946e-05, 3.1946e-05)}
+('codecs.py', 331, 'getstate') 1015 1015 0.000403522 0.000403522 {('~', 0, "<method 'readline' of '_io.TextIOWrapper' objects>"): (1015, 1015, 0.000403522, 0.000403522)}
+('~', 0, '<built-in method io.open>') 1 1 7.635e-05 8.0467e-05 {('text_file.py', 111, 'open'): (1, 1, 7.635e-05, 8.0467e-05)}
+('~', 0, '<built-in method builtins.exec>') 1 1 6.888900000000001e-05 94.95046551300001 {}
+('puzzles.py', 29, '<listcomp>') 1 1 2.8744e-05 2.8744e-05 {('puzzles.py', 22, '__init__'): (1, 1, 2.8744e-05, 2.8744e-05)}
+('puzzles.py', 22, '__init__') 1 1 2.705e-05 0.34903421700000004 {('main.py', 54, 'solve_all_no_stats'): (1, 1, 2.705e-05, 0.34903421700000004)}
+('text_file.py', 78, '__init__') 1 1 2.5214000000000003e-05 0.000116286 {('puzzles.py', 22, '__init__'): (1, 1, 2.5214000000000003e-05, 0.000116286)}
+('~', 0, "<method 'close' of '_io.TextIOWrapper' objects>") 1 1 1.2263000000000001e-05 1.2263000000000001e-05 {('text_file.py', 118, 'close'): (1, 1, 1.2263000000000001e-05, 1.2263000000000001e-05)}
+('text_file.py', 118, 'close') 1 1 6.503e-06 1.8766e-05 {('puzzles.py', 22, '__init__'): (1, 1, 6.503e-06, 1.8766e-05)}
+('text_file.py', 111, 'open') 1 1 5.198e-06 8.5665e-05 {('text_file.py', 78, '__init__'): (1, 1, 5.198e-06, 8.5665e-05)}
+('~', 0, '<built-in method builtins.setattr>') 7 7 4.253000000000001e-06 4.253000000000001e-06 {('text_file.py', 78, '__init__'): (7, 7, 4.253000000000001e-06, 4.253000000000001e-06)}
+('codecs.py', 309, '__init__') 1 1 2.793e-06 4.1170000000000006e-06 {('~', 0, '<built-in method io.open>'): (1, 1, 2.793e-06, 4.1170000000000006e-06)}
+('~', 0, "<method 'disable' of '_lsprof.Profiler' objects>") 1 1 1.4140000000000001e-06 1.4140000000000001e-06 {}
+('sudoku.py', 15, '__init__') 1 1 1.353e-06 3.2188000000000004e-05 {('main.py', 54, 'solve_all_no_stats'): (1, 1, 1.353e-06, 3.2188000000000004e-05)}
+('codecs.py', 260, '__init__') 1 1 1.3240000000000002e-06 1.3240000000000002e-06 {('codecs.py', 309, '__init__'): (1, 1, 1.3240000000000002e-06, 1.3240000000000002e-06)}
+('~', 0, "<method 'keys' of 'dict' objects>") 2 2 1.154e-06 1.154e-06 {('text_file.py', 78, '__init__'): (2, 2, 1.154e-06, 1.154e-06)}
+total calls 44793795
