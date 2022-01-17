@@ -79,15 +79,15 @@ class Stats:
             raise
         self.add(*args)
 
-    def write_stats_to_file(self, filename: str) -> None:
+    def write_stats_to_file(self, filename: str, *amount) -> None:
         old_stream = self.stream
         with open(filename, 'wt') as f:
             self.stream = f
-            self.print_stats()
+            self.print_stats(amount)
             print("", file=self.stream)
-            self.print_callers()
+            self.print_callers(amount)
             print("", file=self.stream)
-            self.print_callees()
+            self.print_callees(amount)
         self.stream = old_stream
 
     # list the tuple indices and directions for sorting,
@@ -498,7 +498,6 @@ class Stats:
         with open(filename, 'wb') as f:
             marshal.dump(self.stats, f)
 
-
 class TupleComp:
     """This class provides a generic function for comparing any two tuples.
     Each instance records a list of tuple-indices (from most significant
@@ -520,17 +519,14 @@ class TupleComp:
                 return direction
         return 0
 
-
 # **************************************************************************
 # func_name is a triple (file:string, line:int, name:string)
 def func_strip_path(func_name):
     filename, line, name = func_name
     return os.path.basename(filename), line, name
 
-
 def func_get_function_name(func):
     return func[2]
-
 
 def func_std_string(func_name):  # match what old profile produced
     if func_name[:2] == ('~', 0):
@@ -542,7 +538,6 @@ def func_std_string(func_name):  # match what old profile produced
             return name
     else:
         return "%s:%d(%s)" % func_name
-
 
 def add_func_stats(target, source):
     """Add together all the stats for two profile entries."""
@@ -569,14 +564,12 @@ def add_callers(target, source):
             new_callers[func] = caller
     return new_callers
 
-
 def count_calls(callers):
     """Sum the caller statistics to get total number of calls received."""
     nc = 0
     for calls in callers.values():
         nc += calls
     return nc
-
 
 def f8(x: float) -> str:  # time will be passed in
     if x >= 1:
@@ -588,7 +581,6 @@ def f8(x: float) -> str:  # time will be passed in
     else:
         return f"{x * 1000000000:8.3f}n"
 
-
 def f8p(x):
     return f"{x * 100.0:7.3f}%"
 
@@ -596,13 +588,13 @@ def f8p(x):
 if __name__ == '__main__':
     import cmd
 
-
     class MyProfileBrowser(cmd.Cmd):
         def __init__(self, profile=None):
             cmd.Cmd.__init__(self)
             self.prompt = " >> "
             self.stats = None
             self.files = []
+            self.file = None
             self.stream = sys.stdout
             if profile is not None:
                 self.do_read(profile)
@@ -631,15 +623,6 @@ if __name__ == '__main__':
             else:
                 print("No statistics object is loaded.", file=self.stream)
             return 0
-
-        def generic_help(self):
-            print("Arguments may be:", file=self.stream)
-            print("* An integer maximum number of entries to print.", file=self.stream)
-            print("* A decimal fractional number between 0 and 1, controlling", file=self.stream)
-            print("  what fraction of selected entries to print.", file=self.stream)
-            print("* A regular expression; only entries with function names", file=self.stream)
-            print("  that match it are printed.", file=self.stream)
-            print("* A filename when using dump.", file=self.stream)
 
         def do_dump(self, line):
             """Dumps stats to specified file as text, e.g. : dump file.txt"""
@@ -693,7 +676,7 @@ if __name__ == '__main__':
             return 1
 
         def do_read(self, line):
-            """Read in profile data from a specified file.\mWithout argument, reload the current file."""
+            """Read in profile data from a specified file.\nWithout argument, reload the current file."""
             if line:
                 try:
                     self.stats = Stats(line)
@@ -765,6 +748,28 @@ if __name__ == '__main__':
                 print("\t\tNo stats files opened", file=self.stream)
             for f in self.files:
                 print(f"\t\t{f}", file=self.stream)
+
+        # ----- record and playback -----
+        def do_record(self, arg):
+            'Save future commands to filename:  RECORD rose.cmd'
+            self.file = open(arg, 'w')
+
+        def do_stop(self, line):
+            """Stops recording a macro"""
+            if self.file:
+                self.file.close()
+                self.file = None
+
+        def do_run(self, arg):
+            """Runs commands from a file:  run file.scr"""
+            with open(arg) as f:
+                self.cmdqueue.extend(f.read().splitlines())
+
+        def precmd(self, line):
+            line = line.lower()
+            if self.file and 'playback' not in line:
+                print(line, file=self.file)
+            return line
 
         def help_help(self):
             print("Show help for a given command.", file=self.stream)

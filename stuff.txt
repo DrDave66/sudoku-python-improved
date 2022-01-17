@@ -1,0 +1,32 @@
+starting point
+     ncalls    tottime   %tottime   percall    cumtime  %cumtime    percall  filename:lineno(function)
+       28022    35.143s   83.212%     1.254m    38.443s   91.025%     1.372m  sudoku.py:216(solve_ones)
+     8733796     2.743s    6.495%   314.066n     2.743s    6.495%   314.066n  sudoku.py:103(number_of_bits_set)
+      293723     1.519s    3.596%     5.171u     1.519s    3.596%     5.171u  sudoku.py:53(set_value)
+       27022   863.186m    2.044%    31.944u     1.540s    3.647%    56.998u  sudoku.py:278(<listcomp>)
+       85305   449.811m    1.065%     5.273u   449.811m    1.065%     5.273u  sudoku.py:247(is_puzzle_solved)
+
+no random
+         8935839 function calls in 35.257 seconds
+     ncalls    tottime   %tottime   percall    cumtime  %cumtime    percall  filename:lineno(function)
+       24653    28.917s   82.018%     1.173m    31.956s   90.638%     1.296m  sudoku.py:216(solve_ones)
+     7932574     2.419s    6.861%   304.939n     2.419s    6.861%   304.939n  sudoku.py:103(number_of_bits_set)
+      258818     1.457s    4.134%     5.631u     1.457s    4.134%     5.631u  sudoku.py:53(set_value)
+       23653   665.196m    1.887%    28.123u     1.207s    3.422%    51.015u  sudoku.py:278(<listcomp>)
+       48398   480.190m    1.362%     9.922u   480.190m    1.362%     9.922u  sudoku.py:266(guesses_remain)
+       73106   414.120m    1.175%     5.665u   414.120m    1.175%     5.665u  sudoku.py:247(is_puzzle_solved)
+      260822   321.567m    0.912%     1.233u   429.646m    1.219%     1.647u  sudoku.py:275(<genexpr>)
+
+moved break
+         8935839 function calls in 28.038 seconds
+      ncalls    tottime   %tottime   percall    cumtime  %cumtime    percall  filename:lineno(function)
+       24653    22.145s   78.983%   898.282u    24.986s   89.114%     1.014m  sudoku.py:216(solve_ones)
+     7932574     2.383s    8.499%   300.418n     2.383s    8.499%   300.418n  sudoku.py:103(number_of_bits_set)
+      258818     1.268s    4.522%     4.899u     1.268s    4.522%     4.899u  sudoku.py:53(set_value)
+       23653   636.950m    2.272%    26.929u     1.202s    4.288%    50.829u  sudoku.py:278(<listcomp>)
+       73106   428.386m    1.528%     5.860u   428.386m    1.528%     5.860u  sudoku.py:247(is_puzzle_solved)
+       48398   338.328m    1.207%     6.991u   338.328m    1.207%     6.991u  sudoku.py:266(guesses_remain)
+      260822   295.140m    1.053%     1.132u   407.970m    1.455%     1.564u  sudoku.py:275(<genexpr>)
+        1000    99.573m    0.355%    99.573u    26.086s   93.036%    26.086m  sudoku.py:307(start_guessing)
+       23653    89.398m    0.319%     3.780u     1.886s    6.725%    79.723u  sudoku.py:273(get_guess)
+       23653    83.740m    0.299%     3.540u    95.231m    0.340%     4.026u  sudoku.py:283(get_guess_value)

@@ -217,27 +217,29 @@ class Sudoku:
         set_some = True
         while set_some:
             while set_some:
-                # self.print_puzzle_and_allowable_values()
                 set_some = False
                 # with_one = [s for s in SQUARES if self.number_of_bits_set(self.allowable_values[s]) == 1]
+                # for wo in with_one:
+                #     self.set_value(wo, self.allowable_values[wo])
+                #     set_some = True
                 for s in SQUARES:
                     if self.number_of_bits_set(self.allowable_values[s]) == 1:
                         self.set_value(s, self.allowable_values[s])
                         set_some = True
 
-            # look in each unit and see if any value appears only one time
-            # create a list of all allowable values in a unit (rol, col, square)
+
             if self.is_puzzle_solved():
                 return
-            #            self.print_puzzle_and_allowable_values()
+            # look in each unit and see if any value appears only one time
+            # create a list of all allowable values in a unit (rol, col, square)
             for ul in UNITLIST:
                 for b in BITS:
                     bit_count = 0
                     for s in ul:
                         if self.allowable_values[s] & BITMASK[b] != 0:
                             bit_count += 1
-                        if bit_count > 1:
-                            continue
+                            if bit_count > 1:
+                                break
                     if bit_count == 1:
                         for s in ul:
                             if self.allowable_values[s] & BITMASK[b] != 0:
@@ -327,12 +329,13 @@ class Sudoku:
 
     @staticmethod
     def get_one_of(seq):
-        if type(seq) is int:
-            # pick one of bits set
-            bs = list()
-            bs.append(BITMASK[b] for b in BITS if BITMASK[b] & seq != 0)
-            return random.choice(bs)
-        return random.choice(seq)
+        return seq[0]
+        # if type(seq) is int:
+        #     # pick one of bits set
+        #     bs = list()
+        #     bs.append(BITMASK[b] for b in BITS if BITMASK[b] & seq != 0)
+        #     return random.choice(bs)
+        # return random.choice(seq)
 
     def solve_puzzle(self) -> bool:
         self.solve_ones()

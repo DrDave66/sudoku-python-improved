@@ -243,7 +243,7 @@ if __name__ == "__main__":
             basename = sys.argv[1].split("/")[-1]
             print(f"Basename is {basename}")
             cProfile.run(cmd, statsName)
-            import pstats
+
             from pstats import SortKey
             p = Stats(statsName)
             p.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
