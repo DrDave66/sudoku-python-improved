@@ -246,7 +246,7 @@ if __name__ == "__main__":
 
             from pstats import SortKey
             p = Stats(statsName)
-            p.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
+            # p.strip_dirs().sort_stats(SortKey.TIME).print_stats(20)
             p.strip_dirs().sort_stats(SortKey.TIME).dump_stats(statsName)
             print(f"Dumped stats to {statsName}")
         else:

@@ -58,8 +58,9 @@ class Sudoku:
         else:
             self.puzzle[s] = bm
             self.allowable_values[s] = ALLCLEAR
+        nbm = ~bm
         for p in PEERS[s]:
-            self.allowable_values[p] &= ~bm
+            self.allowable_values[p] &= nbm
         return True
 
     # ################################################################################
@@ -102,18 +103,14 @@ class Sudoku:
 
     @staticmethod
     def number_of_bits_set(num: int) -> int:
-        return int((num * 0x200040008001 & 0x111111111111111) % 0xf)
-        # c = int()
-        # c = (num * 0x200040008001 & 0x111111111111111) % 0xf
-        # return c
-
-        # result = 0
-        # stop = (num != 0)
-        # while stop:
-        #     num &= num - 1
-        #     result += 1
-        #     stop = (num != 0)
-        # return result
+        #  216.628 nsec
+        count = 0
+        while num:
+            num = num & (num - 1)
+            count += 1
+        return count
+        # 286.486 nsec
+        #return int((num * 0x200040008001 & 0x111111111111111) % 0xf)
 
 #    1000000000000001000000000000001000000000000001
     # ################################################################################
@@ -213,38 +210,57 @@ class Sudoku:
     # # puzzle solving functions
     # ################################################################################
 
+    def solve_only_solution(self) -> bool:
+        set_some = True
+        retval = False
+        while set_some:
+            set_some = False
+            # with_one = [s for s in SQUARES if self.number_of_bits_set(self.allowable_values[s]) == 1]
+            # for wo in with_one:
+            #     self.set_value(wo, self.allowable_values[wo])
+            #     set_some = True
+            for s in SQUARES:
+                if self.number_of_bits_set(self.allowable_values[s]) == 1:
+                    self.set_value(s, self.allowable_values[s])
+                    set_some = True
+        retval |= set_some
+        return retval
+
+    def solve_ones_units(self) -> bool:
+        # look in each unit and see if any value appears only one time
+        # create a list of all allowable values in a unit (rol, col, square)
+        set_some = True
+        retval = False
+#        while set_some:
+        set_some = False
+        good_square = 0
+        for ul in UNITLIST:
+            for b in BITS:
+                bit_count = 0
+                for s in ul:
+                    if self.allowable_values[s] & BITMASK[b] != 0:
+                        bit_count += 1
+                        good_square = s
+                        if bit_count > 1:
+                            break
+                if bit_count == 1:
+                    self.set_value(good_square, BITMASK[b])
+                    set_some = True
+                    # for s in ul:
+                    #     if self.allowable_values[s] & BITMASK[b]:
+                    #         self.set_value(s, BITMASK[b])
+                    #        set_some = True
+        retval |= set_some
+        return retval
+
     def solve_ones(self):
         set_some = True
         while set_some:
-            while set_some:
-                set_some = False
-                # with_one = [s for s in SQUARES if self.number_of_bits_set(self.allowable_values[s]) == 1]
-                # for wo in with_one:
-                #     self.set_value(wo, self.allowable_values[wo])
-                #     set_some = True
-                for s in SQUARES:
-                    if self.number_of_bits_set(self.allowable_values[s]) == 1:
-                        self.set_value(s, self.allowable_values[s])
-                        set_some = True
-
-
+            set_some = False
+            set_some |= self.solve_only_solution()
             if self.is_puzzle_solved():
                 return
-            # look in each unit and see if any value appears only one time
-            # create a list of all allowable values in a unit (rol, col, square)
-            for ul in UNITLIST:
-                for b in BITS:
-                    bit_count = 0
-                    for s in ul:
-                        if self.allowable_values[s] & BITMASK[b] != 0:
-                            bit_count += 1
-                            if bit_count > 1:
-                                break
-                    if bit_count == 1:
-                        for s in ul:
-                            if self.allowable_values[s] & BITMASK[b] != 0:
-                                self.set_value(s, BITMASK[b])
-                                set_some = True
+            set_some |= self.solve_ones_units()
 
     def is_puzzle_solved(self) -> bool:
         # def unitsolved(unit): return set(self.puzzle[s] for s in unit) == set(self.digits)

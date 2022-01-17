@@ -1,4 +1,5 @@
-read
+read stats.stats
+strip
 sort time
 stats sudoku
 stop
