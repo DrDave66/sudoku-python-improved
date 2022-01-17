@@ -53,14 +53,11 @@ class Sudoku:
     def set_value(self, s: int, bm: int) -> bool:
         if self.allowable_values[s] & bm == 0:
             return False
-        if bm == ALLCLEAR:
-            self.puzzle[s] = ALLCLEAR
-        else:
-            self.puzzle[s] = bm
+        self.puzzle[s] = bm
+        if bm != ALLCLEAR:
             self.allowable_values[s] = ALLCLEAR
-        nbm = ~bm
         for p in PEERS[s]:
-            self.allowable_values[p] &= nbm
+            self.allowable_values[p] &= ~bm
         return True
 
     # ################################################################################
@@ -246,10 +243,6 @@ class Sudoku:
                 if bit_count == 1:
                     self.set_value(good_square, BITMASK[b])
                     set_some = True
-                    # for s in ul:
-                    #     if self.allowable_values[s] & BITMASK[b]:
-                    #         self.set_value(s, BITMASK[b])
-                    #        set_some = True
         retval |= set_some
         return retval
 
@@ -259,7 +252,7 @@ class Sudoku:
             set_some = False
             set_some |= self.solve_only_solution()
             if self.is_puzzle_solved():
-                return
+                break
             set_some |= self.solve_ones_units()
 
     def is_puzzle_solved(self) -> bool:
@@ -345,13 +338,13 @@ class Sudoku:
 
     @staticmethod
     def get_one_of(seq):
-        return seq[0]
-        # if type(seq) is int:
-        #     # pick one of bits set
-        #     bs = list()
-        #     bs.append(BITMASK[b] for b in BITS if BITMASK[b] & seq != 0)
-        #     return random.choice(bs)
-        # return random.choice(seq)
+        # return seq[0]
+        if type(seq) is int:
+            # pick one of bits set
+            bs = list()
+            bs.append(BITMASK[b] for b in BITS if BITMASK[b] & seq != 0)
+            return random.choice(bs)
+        return random.choice(seq)
 
     def solve_puzzle(self) -> bool:
         self.solve_ones()

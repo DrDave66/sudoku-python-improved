@@ -110,7 +110,7 @@ keeping track of last square in unit solve
        73106   424.337m    1.581%     5.804u   424.337m    1.581%     5.804u  sudoku.py:264(is_puzzle_solved)
        48398   339.041m    1.263%     7.005u   339.041m    1.263%     7.005u  sudoku.py:283(guesses_remain)
 
-1MP
+100K
          44893849 function calls in 85.744 seconds
       ncalls    tottime   %tottime   percall    cumtime  %cumtime    percall  filename:lineno(function)
      8100000    41.594s   48.510%     5.135u    41.594s   48.510%     5.135u  sudoku.py:53(set_value)
@@ -123,3 +123,17 @@ keeping track of last square in unit solve
       100000    76.445m    0.089%   764.450n    56.620s   66.034%   566.202u  sudoku.py:355(solve_puzzle)
           27    13.728m    0.016%   508.434u    17.814m    0.021%   659.761u  sudoku.py:228(solve_ones_units)
            1     1.389u    0.000%     1.389u    20.258u    0.000%    20.258u  sudoku.py:15(__init__)
+
+10K before math
+         4486441 function calls in 8.277 seconds
+      ncalls    tottime   %tottime   percall    cumtime  %cumtime    percall  filename:lineno(function)
+      810000     3.859s   46.624%     4.764u     3.859s   46.624%     4.764u  sudoku.py:53(set_value)
+       10003     1.452s   17.545%   145.177u     4.622s   55.845%   462.102u  sudoku.py:213(solve_only_solution)
+       30003     1.292s   15.604%    43.047u     1.292s   15.604%    43.047u  sudoku.py:265(is_puzzle_solved)
+     3476034   935.730m   11.305%   269.195n   935.730m   11.305%   269.195n  sudoku.py:104(number_of_bits_set)
+       10000   401.068m    4.845%    40.107u     2.206s   26.655%   220.630u  sudoku.py:36(set_puzzle)
+       10001   179.066m    2.163%    17.905u   179.066m    2.163%    17.905u  sudoku.py:48(clear_puzzle)
+       10000    10.726m    0.130%     1.073u     5.073s   61.286%   507.273u  sudoku.py:256(solve_ones)
+       10000     9.077m    0.110%   907.703n     5.509s   66.554%   550.875u  sudoku.py:356(solve_puzzle)
+           3     1.473m    0.018%   490.995u     1.856m    0.022%   618.639u  sudoku.py:229(solve_ones_units)
+           1     2.232u    0.000%     2.232u    31.783u    0.000%    31.783u  sudoku.py:15(__init__)
