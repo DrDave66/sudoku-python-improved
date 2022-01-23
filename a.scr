@@ -1,0 +1,7 @@
+clear
+add stats.stats
+sort time
+stats sudoku
+callers sudoku
+callees sudoku
+dump dump.txt

@@ -1,0 +1,170 @@
+Sun Jan 16 13:54:19 2022    stats.stats
+
+         4476435 function calls in 8.022 seconds
+
+   Random listing order was used
+
+      ncalls    tottime   %tottime   percall    cumtime  %cumtime    percall  filename:lineno(function)
+       10000     4.016m    0.050%   401.639n     4.016m    0.050%   401.639n  {method 'find' of 'str' objects}
+       10000     3.919m    0.049%   391.948n     3.919m    0.049%   391.948n  {method 'rstrip' of 'str' objects}
+           2   676.000n    0.000%   338.000n   676.000n    0.000%   338.000n  {method 'keys' of 'dict' objects}
+       10000     1.540m    0.019%   153.969n     1.540m    0.019%   153.969n  {method 'append' of 'list' objects}
+           1    38.549u    0.000%    38.549u     8.022s  100.000%     8.022s  {built-in method builtins.exec}
+       10000     2.243m    0.028%   224.275n     2.243m    0.028%   224.275n  {built-in method builtins.isinstance}
+       20003     3.359m    0.042%   167.916n     3.359m    0.042%   167.916n  {built-in method builtins.len}
+          53   845.842u    0.011%    15.959u   845.842u    0.011%    15.959u  {built-in method builtins.print}
+           7     3.081u    0.000%   440.143n     3.081u    0.000%   440.143n  {built-in method builtins.setattr}
+       10001     8.493m    0.106%   849.260n     9.386m    0.117%   938.531n  {method 'readline' of '_io.TextIOWrapper' objects}
+           1    17.991u    0.000%    17.991u    17.991u    0.000%    17.991u  {method 'close' of '_io.TextIOWrapper' objects}
+           1   335.809u    0.004%   335.809u   342.815u    0.004%   342.815u  {built-in method io.open}
+       20003     5.365m    0.067%   268.202n     5.365m    0.067%   268.202n  {built-in method time.perf_counter}
+         103   346.676u    0.004%     3.366u   346.676u    0.004%     3.366u  {built-in method _codecs.utf_8_decode}
+           1   332.119u    0.004%   332.119u     8.022s  100.000%     8.022s  <string>:1(<module>)
+           1     5.369u    0.000%     5.369u     7.006u    0.000%     7.006u  codecs.py:309(__init__)
+         103   434.581u    0.005%     4.219u   781.257u    0.010%     7.585u  codecs.py:319(decode)
+         103   111.541u    0.001%     1.083u   111.541u    0.001%     1.083u  codecs.py:331(getstate)
+           1    33.784m    0.421%    33.784m     8.022s   99.995%     8.022s  main.py:54(solve_all_no_stats)
+           1    14.218u    0.000%    14.218u    14.218u    0.000%    14.218u  puzzles.py:29(<listcomp>)
+           1    30.723u    0.000%    30.723u    63.396m    0.790%    63.396m  puzzles.py:22(__init__)
+       10003     4.873m    0.061%   487.134n     6.840m    0.085%   683.771n  puzzles.py:35(get_number_of_puzzles)
+       10000     7.795m    0.097%   779.500n    14.625m    0.182%     1.463u  puzzles.py:38(get_puzzle)
+           1    19.325u    0.000%    19.325u   370.552u    0.005%   370.552u  text_file.py:78(__init__)
+           1     4.655u    0.000%     4.655u   347.470u    0.004%   347.470u  text_file.py:111(open)
+           1     9.124u    0.000%     9.124u    27.115u    0.000%    27.115u  text_file.py:118(close)
+       10001    32.776m    0.409%     3.277u    52.341m    0.652%     5.234u  text_file.py:152(readline)
+           1     9.043m    0.113%     9.043m    62.924m    0.784%    62.924m  text_file.py:272(readlines)
+           1     2.196u    0.000%     2.196u    34.259u    0.000%    34.259u  sudoku.py:15(__init__)
+       10000   356.265m    4.441%    35.626u     2.119s   26.414%   211.893u  sudoku.py:36(set_puzzle)
+       10001   168.966m    2.106%    16.895u   168.966m    2.106%    16.895u  sudoku.py:48(clear_puzzle)
+      810000     3.816s   47.567%     4.711u     3.816s   47.567%     4.711u  sudoku.py:53(set_value)
+     3476034     1.088s   13.567%   313.110n     1.088s   13.567%   313.110n  sudoku.py:103(number_of_bits_set)
+       10000     1.258s   15.678%   125.772u     4.977s   62.043%   497.716u  sudoku.py:216(solve_ones)
+       30003     1.207s   15.050%    40.241u     1.207s   15.050%    40.241u  sudoku.py:247(is_puzzle_solved)
+       10000     7.783m    0.097%   778.271n     5.383s   67.098%   538.268u  sudoku.py:337(solve_puzzle)
+           1     1.637u    0.000%     1.637u     1.637u    0.000%     1.637u  codecs.py:260(__init__)
+           1     1.146u    0.000%     1.146u     1.146u    0.000%     1.146u  {method 'disable' of '_lsprof.Profiler' objects}
+
+
+
+   Random listing order was used
+
+Function                                            was called by...
+                                                                   ncalls    tottime   %tottime   cumtime  %cumtime    file:line:function
+{method 'find' of 'str' objects}                    <-              10000     4.016m    0.050%     4.016m    0.050%    text_file.py:152(readline)
+{method 'rstrip' of 'str' objects}                  <-              10000     3.919m    0.049%     3.919m    0.049%    text_file.py:152(readline)
+{method 'keys' of 'dict' objects}                   <-                  2   676.000n    0.000%   676.000n    0.000%    text_file.py:78(__init__)
+{method 'append' of 'list' objects}                 <-              10000     1.540m    0.019%     1.540m    0.019%    text_file.py:272(readlines)
+{built-in method builtins.exec}                     <- 
+{built-in method builtins.isinstance}               <-              10000     2.243m    0.028%     2.243m    0.028%    text_file.py:152(readline)
+{built-in method builtins.len}                      <-              10003     1.967m    0.025%     1.967m    0.025%    puzzles.py:35(get_number_of_puzzles)
+                                                                    10000     1.392m    0.017%     1.392m    0.017%    sudoku.py:36(set_puzzle)
+{built-in method builtins.print}                    <-                 51   822.426u    0.010%   822.426u    0.010%    main.py:54(solve_all_no_stats)
+                                                                        2    23.416u    0.000%    23.416u    0.000%    puzzles.py:22(__init__)
+{built-in method builtins.setattr}                  <-                  7     3.081u    0.000%     3.081u    0.000%    text_file.py:78(__init__)
+{method 'readline' of '_io.TextIOWrapper' objects}  <-              10001     8.493m    0.106%     9.386m    0.117%    text_file.py:152(readline)
+{method 'close' of '_io.TextIOWrapper' objects}     <-                  1    17.991u    0.000%    17.991u    0.000%    text_file.py:118(close)
+{built-in method io.open}                           <-                  1   335.809u    0.004%   342.815u    0.004%    text_file.py:111(open)
+{built-in method time.perf_counter}                 <-              20003     5.365m    0.067%     5.365m    0.067%    main.py:54(solve_all_no_stats)
+{built-in method _codecs.utf_8_decode}              <-                103   346.676u    0.004%   346.676u    0.004%    codecs.py:319(decode)
+<string>:1(<module>)                                <-                  1   332.119u    0.004%     8.022s  100.000%    {built-in method builtins.exec}
+codecs.py:309(__init__)                             <-                  1     5.369u    0.000%     7.006u    0.000%    {built-in method io.open}
+codecs.py:319(decode)                               <-                103   434.581u    0.005%   781.257u    0.010%    {method 'readline' of '_io.TextIOWrapper' objects}
+codecs.py:331(getstate)                             <-                103   111.541u    0.001%   111.541u    0.001%    {method 'readline' of '_io.TextIOWrapper' objects}
+main.py:54(solve_all_no_stats)                      <-                  1    33.784m    0.421%     8.022s   99.995%    <string>:1(<module>)
+puzzles.py:29(<listcomp>)                           <-                  1    14.218u    0.000%    14.218u    0.000%    puzzles.py:22(__init__)
+puzzles.py:22(__init__)                             <-                  1    30.723u    0.000%    63.396m    0.790%    main.py:54(solve_all_no_stats)
+puzzles.py:35(get_number_of_puzzles)                <-                  2     2.657u    0.000%     3.706u    0.000%    main.py:54(solve_all_no_stats)
+                                                                        1     5.285u    0.000%     5.905u    0.000%    puzzles.py:22(__init__)
+                                                                    10000     4.865m    0.061%     6.830m    0.085%    puzzles.py:38(get_puzzle)
+puzzles.py:38(get_puzzle)                           <-              10000     7.795m    0.097%    14.625m    0.182%    main.py:54(solve_all_no_stats)
+text_file.py:78(__init__)                           <-                  1    19.325u    0.000%   370.552u    0.005%    puzzles.py:22(__init__)
+text_file.py:111(open)                              <-                  1     4.655u    0.000%   347.470u    0.004%    text_file.py:78(__init__)
+text_file.py:118(close)                             <-                  1     9.124u    0.000%    27.115u    0.000%    puzzles.py:22(__init__)
+text_file.py:152(readline)                          <-              10001    32.776m    0.409%    52.341m    0.652%    text_file.py:272(readlines)
+text_file.py:272(readlines)                         <-                  1     9.043m    0.113%    62.924m    0.784%    puzzles.py:22(__init__)
+sudoku.py:15(__init__)                              <-                  1     2.196u    0.000%    34.259u    0.000%    main.py:54(solve_all_no_stats)
+sudoku.py:36(set_puzzle)                            <-              10000   356.265m    4.441%     2.119s   26.414%    main.py:54(solve_all_no_stats)
+sudoku.py:48(clear_puzzle)                          <-                  1    32.063u    0.000%    32.063u    0.000%    sudoku.py:15(__init__)
+                                                                    10000   168.934m    2.106%   168.934m    2.106%    sudoku.py:36(set_puzzle)
+sudoku.py:53(set_value)                             <-             338165     1.592s   19.849%     1.592s   19.849%    sudoku.py:36(set_puzzle)
+                                                                   471835     2.224s   27.718%     2.224s   27.718%    sudoku.py:216(solve_ones)
+sudoku.py:103(number_of_bits_set)                   <-            3476034     1.088s   13.567%     1.088s   13.567%    sudoku.py:216(solve_ones)
+sudoku.py:216(solve_ones)                           <-              10000     1.258s   15.678%     4.977s   62.043%    sudoku.py:337(solve_puzzle)
+sudoku.py:247(is_puzzle_solved)                     <-              10000   402.108m    5.012%   402.108m    5.012%    main.py:54(solve_all_no_stats)
+                                                                    10003   407.499m    5.080%   407.499m    5.080%    sudoku.py:216(solve_ones)
+                                                                    10000   397.741m    4.958%   397.741m    4.958%    sudoku.py:337(solve_puzzle)
+sudoku.py:337(solve_puzzle)                         <-              10000     7.783m    0.097%     5.383s   67.098%    main.py:54(solve_all_no_stats)
+codecs.py:260(__init__)                             <-                  1     1.637u    0.000%     1.637u    0.000%    codecs.py:309(__init__)
+{method 'disable' of '_lsprof.Profiler' objects}    <- 
+
+
+
+   Random listing order was used
+
+Function                                            called...
+                                                                   ncalls    tottime   %tottime   cumtime  %cumtime    file:line:function
+{method 'find' of 'str' objects}                    -> 
+{method 'rstrip' of 'str' objects}                  -> 
+{method 'keys' of 'dict' objects}                   -> 
+{method 'append' of 'list' objects}                 -> 
+{built-in method builtins.exec}                     ->                  1   332.119u    0.004%     8.022s  100.000%    <string>:1(<module>)
+{built-in method builtins.isinstance}               -> 
+{built-in method builtins.len}                      -> 
+{built-in method builtins.print}                    -> 
+{built-in method builtins.setattr}                  -> 
+{method 'readline' of '_io.TextIOWrapper' objects}  ->                103   434.581u    0.005%   781.257u    0.010%    codecs.py:319(decode)
+                                                                      103   111.541u    0.001%   111.541u    0.001%    codecs.py:331(getstate)
+{method 'close' of '_io.TextIOWrapper' objects}     -> 
+{built-in method io.open}                           ->                  1     5.369u    0.000%     7.006u    0.000%    codecs.py:309(__init__)
+{built-in method time.perf_counter}                 -> 
+{built-in method _codecs.utf_8_decode}              -> 
+<string>:1(<module>)                                ->                  1    33.784m    0.421%     8.022s   99.995%    main.py:54(solve_all_no_stats)
+codecs.py:309(__init__)                             ->                  1     1.637u    0.000%     1.637u    0.000%    codecs.py:260(__init__)
+codecs.py:319(decode)                               ->                103   346.676u    0.004%   346.676u    0.004%    {built-in method _codecs.utf_8_decode}
+codecs.py:331(getstate)                             -> 
+main.py:54(solve_all_no_stats)                      ->                  1    30.723u    0.000%    63.396m    0.790%    puzzles.py:22(__init__)
+                                                                        2     2.657u    0.000%     3.706u    0.000%    puzzles.py:35(get_number_of_puzzles)
+                                                                    10000     7.795m    0.097%    14.625m    0.182%    puzzles.py:38(get_puzzle)
+                                                                        1     2.196u    0.000%    34.259u    0.000%    sudoku.py:15(__init__)
+                                                                    10000   356.265m    4.441%     2.119s   26.414%    sudoku.py:36(set_puzzle)
+                                                                    10000   402.108m    5.012%   402.108m    5.012%    sudoku.py:247(is_puzzle_solved)
+                                                                    10000     7.783m    0.097%     5.383s   67.098%    sudoku.py:337(solve_puzzle)
+                                                                       51   822.426u    0.010%   822.426u    0.010%    {built-in method builtins.print}
+                                                                    20003     5.365m    0.067%     5.365m    0.067%    {built-in method time.perf_counter}
+puzzles.py:29(<listcomp>)                           -> 
+puzzles.py:22(__init__)                             ->                  1    14.218u    0.000%    14.218u    0.000%    puzzles.py:29(<listcomp>)
+                                                                        1     5.285u    0.000%     5.905u    0.000%    puzzles.py:35(get_number_of_puzzles)
+                                                                        1    19.325u    0.000%   370.552u    0.005%    text_file.py:78(__init__)
+                                                                        1     9.124u    0.000%    27.115u    0.000%    text_file.py:118(close)
+                                                                        1     9.043m    0.113%    62.924m    0.784%    text_file.py:272(readlines)
+                                                                        2    23.416u    0.000%    23.416u    0.000%    {built-in method builtins.print}
+puzzles.py:35(get_number_of_puzzles)                ->              10003     1.967m    0.025%     1.967m    0.025%    {built-in method builtins.len}
+puzzles.py:38(get_puzzle)                           ->              10000     4.865m    0.061%     6.830m    0.085%    puzzles.py:35(get_number_of_puzzles)
+text_file.py:78(__init__)                           ->                  1     4.655u    0.000%   347.470u    0.004%    text_file.py:111(open)
+                                                                        7     3.081u    0.000%     3.081u    0.000%    {built-in method builtins.setattr}
+                                                                        2   676.000n    0.000%   676.000n    0.000%    {method 'keys' of 'dict' objects}
+text_file.py:111(open)                              ->                  1   335.809u    0.004%   342.815u    0.004%    {built-in method io.open}
+text_file.py:118(close)                             ->                  1    17.991u    0.000%    17.991u    0.000%    {method 'close' of '_io.TextIOWrapper' objects}
+text_file.py:152(readline)                          ->              10000     2.243m    0.028%     2.243m    0.028%    {built-in method builtins.isinstance}
+                                                                    10000     4.016m    0.050%     4.016m    0.050%    {method 'find' of 'str' objects}
+                                                                    10001     8.493m    0.106%     9.386m    0.117%    {method 'readline' of '_io.TextIOWrapper' objects}
+                                                                    10000     3.919m    0.049%     3.919m    0.049%    {method 'rstrip' of 'str' objects}
+text_file.py:272(readlines)                         ->              10001    32.776m    0.409%    52.341m    0.652%    text_file.py:152(readline)
+                                                                    10000     1.540m    0.019%     1.540m    0.019%    {method 'append' of 'list' objects}
+sudoku.py:15(__init__)                              ->                  1    32.063u    0.000%    32.063u    0.000%    sudoku.py:48(clear_puzzle)
+sudoku.py:36(set_puzzle)                            ->              10000   168.934m    2.106%   168.934m    2.106%    sudoku.py:48(clear_puzzle)
+                                                                   338165     1.592s   19.849%     1.592s   19.849%    sudoku.py:53(set_value)
+                                                                    10000     1.392m    0.017%     1.392m    0.017%    {built-in method builtins.len}
+sudoku.py:48(clear_puzzle)                          -> 
+sudoku.py:53(set_value)                             -> 
+sudoku.py:103(number_of_bits_set)                   -> 
+sudoku.py:216(solve_ones)                           ->             471835     2.224s   27.718%     2.224s   27.718%    sudoku.py:53(set_value)
+                                                                  3476034     1.088s   13.567%     1.088s   13.567%    sudoku.py:103(number_of_bits_set)
+                                                                    10003   407.499m    5.080%   407.499m    5.080%    sudoku.py:247(is_puzzle_solved)
+sudoku.py:247(is_puzzle_solved)                     -> 
+sudoku.py:337(solve_puzzle)                         ->              10000     1.258s   15.678%     4.977s   62.043%    sudoku.py:216(solve_ones)
+                                                                    10000   397.741m    4.958%   397.741m    4.958%    sudoku.py:247(is_puzzle_solved)
+codecs.py:260(__init__)                             -> 
+{method 'disable' of '_lsprof.Profiler' objects}    -> 
+
+
